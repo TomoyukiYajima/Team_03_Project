@@ -67,34 +67,17 @@ public class SceneMgr : SingletonBehaviour<SceneMgr>
 
         m_async = SceneManager.LoadSceneAsync(name.ToString(), LoadSceneMode.Additive);
         // 読み込みが終わっても表示しない
-        m_async.allowSceneActivation = false;
+        m_async.allowSceneActivation = true;
 
         while (!m_async.isDone)
         {
-            FadeMgr.Instance.FillBar(m_async.progress / 0.9f);
+            FadeMgr.Instance.FillBar(m_async.progress /0.9f);
+            Debug.Log(m_async.progress);
             yield return null;
         }
 
-        //// 読み込み終わるまで待機(0.9までしか増えない)
-        //while (m_async.progress < 0.9f)
-        //{
-        //    FadeMgr.Instance.SetCounter(m_async.progress);
-        //    yield return 0;
-        //}
-
-        //// 強制的に100％に
-        //FadeMgr.Instance.SetCounter(1);
-
-        // 90%->100%のTwennが終わるまで待機
-        //yield return new WaitWhile(() => FadeMgr.Instance.Counter != 100);
-
-        // Load完了から少し待つ
-        yield return new WaitForSeconds(2);
-
         // 読み込みが完了しているSceneを表示
         m_async.allowSceneActivation = true;
-
-        yield return null;
 
         UnLoadScene(m_currentScene);
         m_currentScene = name;
@@ -129,6 +112,4 @@ public class SceneMgr : SingletonBehaviour<SceneMgr>
         Debug.Log(name.ToString() + "_Scene : UnLoad!!");
         SceneManager.UnloadSceneAsync(name.ToString());
     }
-
-
 }
