@@ -75,7 +75,7 @@ public class Worker : MonoBehaviour,IWorkerEvent {
     public virtual void ChangeOrder(OrderStatus order)
     {
         // 命令がない場合は返す
-        if (CheckrOrder(order)) return;
+        if (!CheckrOrder(order)) return;
 
         print("命令承認！");
 
