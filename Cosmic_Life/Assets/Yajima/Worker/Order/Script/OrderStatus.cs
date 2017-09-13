@@ -9,5 +9,6 @@ public enum OrderStatus {
     TURN_RIGHT =    1 << 4,
     LIFT =          1 << 5,
     TAKE_DOWN =     1 << 6,
-    ATTACK =        1 << 7
+    ATTACK =        1 << 7,
+    PROTECT =       1 << 8
 }

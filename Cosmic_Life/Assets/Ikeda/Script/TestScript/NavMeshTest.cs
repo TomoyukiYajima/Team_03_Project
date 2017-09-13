@@ -143,7 +143,7 @@ public class NavMeshTest : MonoBehaviour
 
     private bool HasArrived()
     {
-        return (Vector3.Distance(m_Agent.destination, transform.FindChild("GameObject").position) < 0.5f);
+        return (Vector3.Distance(m_Agent.destination, transform.Find("GameObject").position) < 0.5f);
     }
 
     bool IsPlayerInViewingDistance()
