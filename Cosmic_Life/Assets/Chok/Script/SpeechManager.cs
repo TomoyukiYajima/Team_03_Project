@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class SpeechManager : MonoBehaviour {
     //音声コマンドのキーワード
-    private string[] m_Keywords = { "すすめ", "とまれ","じばくしろ","みぎにあわれ","ひだりにまわれ" };
+    private string[] m_Keywords = { "すすめ", "すすんで", "ぜんしんせよ", "いどうしろ", "とまれ","じばくしろ","みぎにあわれ","ひだりにまわれ" };
 
     private KeywordRecognizer m_Recognizer;
 
@@ -35,6 +35,9 @@ public class SpeechManager : MonoBehaviour {
         switch (args.text)
         {
             case "すすめ":
+            case "すすんで":
+            case "ぜんしんせよ":
+            case "いどうしろ":
                 order = OrderStatus.MOVE;
                 break;
             case "とまれ":
