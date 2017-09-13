@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class Worker : MonoBehaviour {
+public class Worker : MonoBehaviour,IWorkerEvent {
 
     // 遅延時間
     //[SerializeField]
