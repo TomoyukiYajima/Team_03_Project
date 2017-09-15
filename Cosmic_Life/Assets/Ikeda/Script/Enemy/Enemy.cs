@@ -3,28 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NavMeshTest : MonoBehaviour
-{
-    public enum EnemyState
-    {
-        //巡回
-        RoundState,
-        //追跡中
-        Chasing,
-        //追跡中(見失っている)
-        ChasingButLosed
-    }
+public class Enemy : MonoBehaviour {
 
+    //命令列挙
+    [SerializeField]
+    private EnemyStatus m_OrderState = EnemyStatus.None;
+    // 命令格納コンテナ
+    private Dictionary<EnemyStatus, System.Action<float, Enemy>> m_Orders =
+        new Dictionary<EnemyStatus, System.Action<float, Enemy>>();
 
+    //命令リスト
+    private EnemyStateList m_StateList;
 
-    //[SerializeField, Tooltip("ターゲットを入れる")]
-    //private Transform m_Target;
+    // 命令実行時間
+    protected float m_StateTimer = 0.0f;
+
 
     //巡回のポイント
     [SerializeField, Tooltip("巡回のポイントを設定する")]
     private Transform[] m_RoundPoints;
 
-    private NavMeshAgent m_Agent;
+    public NavMeshAgent m_Agent;
 
     //現在の巡回ポイントのインデックス
     private int m_CurrentPatrolPointIndex = -1;
@@ -38,7 +37,7 @@ public class NavMeshTest : MonoBehaviour
     private float m_ViewingAngle;
 
     //プレイヤーの参照
-    GameObject m_Player;
+    public GameObject m_Player;
 
     //プレイヤーへの注視点
     Transform m_PlayerLookPoint;
@@ -46,17 +45,17 @@ public class NavMeshTest : MonoBehaviour
     //自身の目の位置
     Transform m_EyePoint;
 
-    //状態
-    private EnemyState m_State = EnemyState.RoundState;
-
     // Use this for initialization
-    void Start()
-    {
+    void Start () {
+        SetState();
+
         m_Agent = GetComponent<NavMeshAgent>();
-        //m_Agent.destination = m_Target.position;
 
         //目的地を設定する
         SetNewPatrolPointToDestination();
+
+        //最初の状態を設定する
+        ChangeState(EnemyStatus.RoundState);
 
         //タグでプレイヤーオブジェクトを検索して保持
         m_Player = GameObject.FindGameObjectWithTag("Player");
@@ -65,85 +64,67 @@ public class NavMeshTest : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void Update () {
+        float time = Time.deltaTime;
+        m_Orders[m_OrderState](time, this);
+
+        m_StateTimer += time;
+	}
+
+
+    // 命令の設定を行います
+    protected virtual void SetState()
     {
-        if (m_State == EnemyState.RoundState)
-        {
-            print("巡回中");
-            //プレイヤーが見えた場合
-            if (CanSeePlayer())
-            {
-                m_State = EnemyState.Chasing;
-                m_Agent.destination = m_Player.transform.position;
-            }
-            //プレイヤーが見えなくて、目的地に到着した場合
-            else if (HasArrived())
-            {
-                //目的地を次の巡回ポイントに切り替える
-                SetNewPatrolPointToDestination();
-            }
-        }
-        //プレイヤーを追跡中
-        else if (m_State == EnemyState.Chasing)
-        {
-            print("追跡中");
-            //プレイヤーが見えている場合
-            if (CanSeePlayer())
-            {
-                //プレイヤーの場所へ向かう
-                m_Agent.destination = m_Player.transform.position;
-            }
-            //見失った場合
-            else
-            {
-                //追跡中に状態変更
-                m_State = EnemyState.ChasingButLosed;
-            }
-        }
-        //追跡中の場合
-        else if (m_State == EnemyState.ChasingButLosed)
-        {
-            print("見失い中");
-            //プレイヤーが見えた場合
-            if (CanSeePlayer())
-            {
-                //追跡中に状態変更
-                m_State = EnemyState.Chasing;
-                m_Agent.destination = m_Player.transform.position;
-            }
-            //プレイヤーを見つけられないまま目的地に到着
-            else if (HasArrived())
-            {
-                //巡回中に状態遷移
-                m_State = EnemyState.RoundState;
-            }
-        }
+        // 命令リストの取得
+        m_StateList = this.transform.Find("StateList").GetComponent<EnemyStateList>();
 
-        //if (HasArrived())
-        //{
-        //    SetNewPatrolPointToDestination();
-        //}
-
-        //if (CanSeePlayer())
-        //{
-        //    print("見えている");
-        //}
-        //else
-        //{
-        //    print("見えていない");
-        //}
+        // 命令の追加
+        for (int i = 0; i != m_StateList.GetOrderStatus().Length; ++i)
+        {
+            var orders = m_StateList.GetEnemyOrder()[i];
+            m_Orders.Add(m_StateList.GetOrderStatus()[i], (deltaTime, gameObj) => { orders.Action(deltaTime, gameObj); });
+        }
     }
 
-    void SetNewPatrolPointToDestination()
+    // 命令の変更を行います
+    public virtual void ChangeState(EnemyStatus order)
     {
-        m_CurrentPatrolPointIndex = (m_CurrentPatrolPointIndex + 1) % m_RoundPoints.Length;
+        // 命令がない場合は返す
+        if (!CheckrState(order)) return;
 
-        m_Agent.destination = m_RoundPoints[m_CurrentPatrolPointIndex].position;
+        print("命令を変更しました");
+
+        m_OrderState = order;
+        m_StateTimer = 0.0f;
     }
 
-    private bool HasArrived()
+
+    // 指定した状態があるかの確認を行います
+    protected bool CheckrState(EnemyStatus order)
     {
-        return (Vector3.Distance(m_Agent.destination, transform.Find("GameObject").position) < 0.5f);
+        // 状態の追加
+        for (int i = 0; i != m_StateList.GetOrderStatus().Length; ++i)
+        {
+            var orderState = m_StateList.GetOrderStatus()[i];
+            // 同一の状態だった場合はtrueを返す
+            if (order == orderState) return true;
+        }
+        // 同一の状態がない
+        return false;
+    }
+
+    public bool CanSeePlayer()
+    {
+        if (!IsPlayerInViewingDistance())
+            return false;
+
+        if (!IsPlayerInViewingAngle())
+            return false;
+
+        if (!CanHitRayToPlayer())
+            return false;
+
+        return true;
     }
 
     bool IsPlayerInViewingDistance()
@@ -179,20 +160,18 @@ public class NavMeshTest : MonoBehaviour
 
     }
 
-    bool CanSeePlayer()
+
+    public bool HasArrived()
     {
-        if (!IsPlayerInViewingDistance())
-            return false;
-
-        if (!IsPlayerInViewingAngle())
-            return false;
-
-        if (!CanHitRayToPlayer())
-            return false;
-
-        return true;
+        return (Vector3.Distance(m_Agent.destination, transform.Find("FootPosition").position) < 0.5f);
     }
 
+    public void SetNewPatrolPointToDestination()
+    {
+        m_CurrentPatrolPointIndex = (m_CurrentPatrolPointIndex + 1) % m_RoundPoints.Length;
+
+        m_Agent.destination = m_RoundPoints[m_CurrentPatrolPointIndex].position;
+    }
 
     public void OnDrawGizmos()
     {

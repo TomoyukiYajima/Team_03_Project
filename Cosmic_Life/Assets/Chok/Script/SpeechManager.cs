@@ -48,15 +48,6 @@ public class SpeechManager : MonoBehaviour
 
     private void OnPhraseRecognized(PhraseRecognizedEventArgs args)
     {
-        // ワーカへ命令しているか
-        bool leftorder = false;
-        bool rightorder = false;
-
-        if (PlayerInputManager.GetInputStay(InputState.INPUT_TRIGGER_LEFT)) leftorder = true;
-        if (PlayerInputManager.GetInputStay(InputState.INPUT_TRIGGER_RIGHT)) rightorder = true;
-
-        if (!leftorder && !rightorder) return;
-
         //ログ出力
         StringBuilder builder = new StringBuilder();
         builder.AppendFormat("{0} ({1}){2}", args.text, args.confidence, Environment.NewLine);
@@ -67,38 +58,40 @@ public class SpeechManager : MonoBehaviour
         // オーダー初期化
         OrderStatus orderType = OrderStatus.NULL;
 
-        foreach(var text in m_moveKeyword)
-        {
-            if (args.text != text) continue;
-            orderType = OrderStatus.MOVE;
-            break;
-        }
-
-        //認識したキーワードで処理判定
-        //switch (args.text)
+        //foreach(var text in m_moveKeyword)
         //{
-        //    case "すすめ":
-        //    case "すすんで":
-        //    case "ぜんしんせよ":
-        //    case "いどうしろ":
-        //        orderType = OrderStatus.MOVE;
-        //        break;
-        //    case "とまれ":
-        //        orderType = OrderStatus.STOP;
-        //        break;
-        //    case "じばくしろ":
-        //        orderType = OrderStatus.MOVE;
-        //        break;
-        //    case "みぎにまわれ":
-        //        orderType = OrderStatus.TURN_RIGHT;
-        //        break;
-        //    case "ひだりにまわれ":
-        //        orderType = OrderStatus.TURN_LEFT;
-        //        break;
+        //    if (args.text != text) continue;
+        //    orderType = OrderStatus.MOVE;
+        //    break;
         //}
 
+        //認識したキーワードで処理判定
+        switch (args.text)
+        {
+            case "すすめ":
+            case "すすんで":
+            case "ぜんしんせよ":
+            case "いどうしろ":
+                orderType = OrderStatus.MOVE;
+                break;
+            case "とまれ":
+                orderType = OrderStatus.STOP;
+                break;
+            case "じばくしろ":
+                orderType = OrderStatus.MOVE;
+                break;
+            case "みぎにまわれ":
+                orderType = OrderStatus.TURN_RIGHT;
+                break;
+            case "ひだりにまわれ":
+                orderType = OrderStatus.TURN_LEFT;
+                break;
+        }
+
         // ワーカーリスト取得
-        var workerList = GameObject.FindGameObjectsWithTag("Worker");
+        List<GameObject> workerList = new List<GameObject>();
+        workerList.AddRange(GameObject.FindGameObjectsWithTag("Worker"));
+        workerList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
 
         // 全部のワーカにオーダーを出す
         foreach (var worker in workerList)
