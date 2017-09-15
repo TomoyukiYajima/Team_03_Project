@@ -18,6 +18,9 @@ public class BlowOffWorker : Worker
     // プレイヤーが見ていない時間
     private float m_LockAtTimer = 0.0f;
 
+    // サボるか
+    private bool m_IsBlowOff = false;
+
     // Use this for initialization
     public override void Start()
     {
@@ -31,7 +34,11 @@ public class BlowOffWorker : Worker
     {
         base.Update();
 
-        if (!m_IsRender) print("見えていない");
+        if (!m_IsRender)
+        {
+            m_LockAtTimer = Mathf.Min(m_LockAtTimer + Time.deltaTime, m_BlowOffTime);
+            if (m_LockAtTimer == m_BlowOffTime) m_IsBlowOff = true;
+        }
 
         m_IsRender = false;
     }

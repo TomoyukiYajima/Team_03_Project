@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 攻撃命令クラス
 public class OrderAttack : Order {
 
     //// Use this for initialization

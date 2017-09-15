@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
+// 移動命令クラス
 public class OrderMove : Order {
 
     [SerializeField]

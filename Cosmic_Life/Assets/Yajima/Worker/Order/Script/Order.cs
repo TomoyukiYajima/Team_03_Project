@@ -14,8 +14,18 @@ public class Order : MonoBehaviour {
 		
 	}
 
+    // 最初の行動
+    public virtual void StartAction(GameObject obj)
+    {
+    }
+
     // 行動
     public virtual void Action(float deltaTime, GameObject obj)
+    {
+    }
+
+    // 行動終了
+    public virtual void EndAction()
     {
     }
 }

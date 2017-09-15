@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OrderLift : Order {
+// 自爆命令クラス
+public class OrderDestruct : Order {
 
     //// Use this for initialization
     //void Start () {
@@ -16,6 +17,6 @@ public class OrderLift : Order {
 
     public override void Action(float deltaTime, GameObject obj)
     {
-        print("Lift");
+        print("Destruct");
     }
 }
