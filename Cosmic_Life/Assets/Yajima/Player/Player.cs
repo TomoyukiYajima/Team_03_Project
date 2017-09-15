@@ -30,14 +30,18 @@ public class Player : MonoBehaviour {
         // デルタタイムの取得
         float time = Time.deltaTime;
 
-        float x = PlayerInputManager.GetHorizontal();
-        float z = PlayerInputManager.GetVertical();
+        float x = PlayerInputManager.GetVertical();
+        float z = PlayerInputManager.GetHorizontal();
 
-        Vector3 velocity = new Vector3(
-            PlayerInputManager.GetHorizontal(), 
-            0.0f,
-            PlayerInputManager.GetVertical()
-            ).normalized;
+        Vector3 velocity = Vector3.zero;
+
+        //velocity = new Vector3(x, 0, z);
+        if (m_camera != null)
+        {
+            velocity += m_camera.forward * x;
+            velocity += m_camera.right * z;
+        }
+
         this.transform.position += velocity * m_Speed * time;
 	}
 }

@@ -12,9 +12,16 @@ public class SpeechManager : MonoBehaviour
     //private string[] m_Keywords = { "すすめ", "すすんで", "ぜんしんせよ", "いどうしろ", "とまれ", "じばくしろ", "みぎにまわれ", "ひだりにまわれ" };
 
     private KeywordRecognizer m_Recognizer;
+    private DictationRecognizer m_dictation;
 
     private List<string> m_moveKeyword = new List<string>();
 
+    [SerializeField]
+    private List<string> m_dictationText = new List<string>();
+    [SerializeField]
+    private List<string> m_dictationHypotheses = new List<string>();
+
+    //#if !UNITY_EDITOR
     void Start()
     {
         string path = "Assets/Resources/";
@@ -42,10 +49,43 @@ public class SpeechManager : MonoBehaviour
         m_Recognizer = new KeywordRecognizer(m_Keywords);
         m_Recognizer.OnPhraseRecognized += OnPhraseRecognized;
         m_Recognizer.Start();
+
+        m_dictation = new DictationRecognizer();
+
+        m_dictation.DictationResult += (text, confidence) =>
+        {
+            Debug.LogFormat("Dictation result : {0}", text);
+            m_dictationText.Add(text);
+        };
+        m_dictation.DictationHypothesis += (text) =>
+        {
+            Debug.LogFormat("Dictation hypothesis : {0}", text);
+            m_dictationHypotheses.Add(text);
+        };
+        m_dictation.DictationComplete += (cause) =>
+        {
+            if (cause != DictationCompletionCause.Complete)
+                Debug.LogErrorFormat("Dictation complete unsuccessfully : {0}", cause);
+        };
+        m_dictation.DictationError += (error,hresult) =>
+        {
+            Debug.LogErrorFormat("Dictation error : {0}; HResult = {1}.", error,hresult);
+        };
+
+        m_dictation.Start();
     }
 
     private void OnPhraseRecognized(PhraseRecognizedEventArgs args)
     {
+        // ワーカへ命令しているか
+        bool leftorder = false;
+        bool rightorder = false;
+
+        if (PlayerInputManager.GetInputStay(InputState.INPUT_TRIGGER_LEFT)) leftorder = true;
+        if (PlayerInputManager.GetInputStay(InputState.INPUT_TRIGGER_RIGHT)) rightorder = true;
+
+        if (!leftorder && !rightorder) return;
+
         //ログ出力
         StringBuilder builder = new StringBuilder();
         builder.AppendFormat("{0} ({1}){2}", args.text, args.confidence, Environment.NewLine);
@@ -106,4 +146,6 @@ public class SpeechManager : MonoBehaviour
         }
 
     }
+
+//#endif
 }
