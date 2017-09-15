@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows.Speech;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class SpeechManager : MonoBehaviour
 {
@@ -17,50 +18,50 @@ public class SpeechManager : MonoBehaviour
     private List<string> m_moveKeyword = new List<string>();
 
     [SerializeField]
-    private List<string> m_dictationText = new List<string>();
+    private Text m_dictationText;
     [SerializeField]
-    private List<string> m_dictationHypotheses = new List<string>();
+    private Text m_dictationHypotheses;
 
     //#if !UNITY_EDITOR
     void Start()
     {
-        string path = "Assets/Resources/";
-        //ストリームの生成、Open読み込み専門
-        FileStream fs = new FileStream(path + "move.txt", FileMode.Open);
-        //ストリームから読み込み準備
-        StreamReader sr = new StreamReader(fs);
-        //読み込んで表示
-        while (!sr.EndOfStream)
-        {//最後の行に（なる以外）
-            string line = sr.ReadLine();
-            m_moveKeyword.Add(line);
-            Debug.Log(line);
-        }
-        //ストリームも終了させる
-        sr.Close();
+        //string path = "Assets/Resources/";
+        ////ストリームの生成、Open読み込み専門
+        //FileStream fs = new FileStream(path + "move.txt", FileMode.Open);
+        ////ストリームから読み込み準備
+        //StreamReader sr = new StreamReader(fs);
+        ////読み込んで表示
+        //while (!sr.EndOfStream)
+        //{//最後の行に（なる以外）
+        //    string line = sr.ReadLine();
+        //    m_moveKeyword.Add(line);
+        //    Debug.Log(line);
+        //}
+        ////ストリームも終了させる
+        //sr.Close();
 
-        string[] m_Keywords = new string[m_moveKeyword.Count];
+        //string[] m_Keywords = new string[m_moveKeyword.Count];
 
-        for(int i= 0; i< m_moveKeyword.Count; ++i)
-        {
-            m_Keywords[i] = m_moveKeyword[i];
-        }
+        //for(int i= 0; i< m_moveKeyword.Count; ++i)
+        //{
+        //    m_Keywords[i] = m_moveKeyword[i];
+        //}
 
-        m_Recognizer = new KeywordRecognizer(m_Keywords);
-        m_Recognizer.OnPhraseRecognized += OnPhraseRecognized;
-        m_Recognizer.Start();
+        //m_Recognizer = new KeywordRecognizer(m_Keywords);
+        //m_Recognizer.OnPhraseRecognized += OnPhraseRecognized;
+        //m_Recognizer.Start();
 
         m_dictation = new DictationRecognizer();
 
         m_dictation.DictationResult += (text, confidence) =>
         {
             Debug.LogFormat("Dictation result : {0}", text);
-            m_dictationText.Add(text);
+            m_dictationText.text = text;
         };
         m_dictation.DictationHypothesis += (text) =>
         {
             Debug.LogFormat("Dictation hypothesis : {0}", text);
-            m_dictationHypotheses.Add(text);
+            m_dictationHypotheses.text = text;
         };
         m_dictation.DictationComplete += (cause) =>
         {
