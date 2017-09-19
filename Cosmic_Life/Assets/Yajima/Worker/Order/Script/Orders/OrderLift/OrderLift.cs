@@ -98,7 +98,7 @@ public class OrderLift : Order {
 
         if (m_CheckLiftObject.IsCheckLift(m_LiftObject))
         {
-            m_LiftObject.transform.position += Vector3.up * 2.0f;
+            m_LiftObject.transform.position += Vector3.up * 1.0f;
             m_IsLift = true;
             // 持ち上げたオブジェクトを、ロボットの持つオブジェクトに変更する
             var liftObj = obj.transform.Find("LiftObject");
@@ -107,7 +107,7 @@ public class OrderLift : Order {
         }
 
         // 移動
-        float speed = 1.0f;
+        float speed = 3.0f;
         var dis = m_LiftObject.transform.position - this.transform.position;
         dis.y = 0.0f;
         var direction = Vector3.Normalize(dis);

@@ -29,7 +29,7 @@ public class OrderTakeDown : Order {
             return;
         }
         var stageObj = liftObj.GetChild(0).GetComponent<StageObject>();
-        stageObj.transform.position -= Vector3.up * 2.0f;
+        stageObj.transform.position -= Vector3.up * 1.0f;
         // ステージオブジェクトの親を初期化する
         stageObj.InitParent();
     }

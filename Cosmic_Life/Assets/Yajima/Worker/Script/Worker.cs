@@ -16,6 +16,8 @@ public class Worker : MonoBehaviour, IWorkerEvent
 
     // 接地しているか
     private bool m_IsGround = false;
+    // ジャミングされているか？
+    private bool m_IsJamming = false;
 
     // 命令
     protected OrderStatus m_OrderState = OrderStatus.NULL;
@@ -39,6 +41,9 @@ public class Worker : MonoBehaviour, IWorkerEvent
     // Update is called once per frame
     public virtual void Update()
     {
+        // ジャミング状態なら返す
+        if (m_IsJamming) return;
+
         // デルタタイムの取得
         float time = Time.deltaTime;
         // 命令の実行
@@ -53,11 +58,17 @@ public class Worker : MonoBehaviour, IWorkerEvent
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN_LEFT);
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN_RIGHT);
 
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
+        //// 持ち上げサンプル
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
+
+        // 攻撃サンプル
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK_HIGH);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_LOW);
 
         m_StateTimer += time;
 
+        // 接地していない場合は、重力加算
         if (!m_IsGround)
         {
             this.transform.position += Vector3.down * 9.8f * time;
@@ -118,6 +129,35 @@ public class Worker : MonoBehaviour, IWorkerEvent
         }
         // 同一の命令がない
         return false;
+    }
+
+    // ジャミングかどうか
+    public void Jamming(bool isJamming)
+    {
+        if (isJamming) Jamming();
+        else NotJamming();
+    }
+
+    // ジャミング用
+    private void Jamming()
+    {
+        m_IsJamming = true;
+
+        // 最後の行動
+        m_Orders[m_OrderState].EndAction();
+
+        // 命令状態をNULLにする
+        m_OrderState = OrderStatus.NULL;
+        m_StateTimer = 0.0f;
+
+        // 最初の行動
+        m_Orders[m_OrderState].StartAction(gameObject);
+    }
+
+    // ジャミング解除用
+    private void NotJamming()
+    {
+        m_IsJamming = false;
     }
 
     public void OnCollisionEnter(Collision collision)
