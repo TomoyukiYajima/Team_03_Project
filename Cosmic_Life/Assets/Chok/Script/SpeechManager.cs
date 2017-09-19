@@ -9,14 +9,11 @@ using UnityEngine.UI;
 
 public class SpeechManager : MonoBehaviour
 {
-    //音声コマンドのキーワード
-    //private string[] m_Keywords = { "すすめ", "すすんで", "ぜんしんせよ", "いどうしろ", "とまれ", "じばくしろ", "みぎにまわれ", "ひだりにまわれ" };
-
     private KeywordRecognizer m_Recognizer;
 
     private List<string> m_moveKeyword = new List<string>();
 
-    //#if !UNITY_EDITOR
+#if !UNITY_EDITOR
     void Start()
     {
         string path = "Assets/Resources/";
@@ -41,22 +38,15 @@ public class SpeechManager : MonoBehaviour
             m_Keywords[i] = m_moveKeyword[i];
         }
 
+        // キーワードを格納
         m_Recognizer = new KeywordRecognizer(m_Keywords);
         m_Recognizer.OnPhraseRecognized += OnPhraseRecognized;
         m_Recognizer.Start();
     }
 
+    // キーワードを読み取ったら実行するメソッド
     private void OnPhraseRecognized(PhraseRecognizedEventArgs args)
     {
-        // ワーカへ命令しているか
-        bool leftorder = false;
-        bool rightorder = false;
-
-        if (PlayerInputManager.GetInputStay(InputState.INPUT_TRIGGER_LEFT)) leftorder = true;
-        if (PlayerInputManager.GetInputStay(InputState.INPUT_TRIGGER_RIGHT)) rightorder = true;
-
-        if (!leftorder && !rightorder) return;
-
         //ログ出力
         StringBuilder builder = new StringBuilder();
         builder.AppendFormat("{0} ({1}){2}", args.text, args.confidence, Environment.NewLine);
@@ -67,38 +57,38 @@ public class SpeechManager : MonoBehaviour
         // オーダー初期化
         OrderStatus orderType = OrderStatus.NULL;
 
-        foreach(var text in m_moveKeyword)
-        {
-            if (args.text != text) continue;
-            orderType = OrderStatus.MOVE;
-            break;
-        }
-
-        //認識したキーワードで処理判定
-        //switch (args.text)
+        //foreach(var text in m_moveKeyword)
         //{
-        //    case "すすめ":
-        //    case "すすんで":
-        //    case "ぜんしんせよ":
-        //    case "いどうしろ":
-        //        orderType = OrderStatus.MOVE;
-        //        break;
-        //    case "とまれ":
-        //        orderType = OrderStatus.STOP;
-        //        break;
-        //    case "じばくしろ":
-        //        orderType = OrderStatus.MOVE;
-        //        break;
-        //    case "みぎにまわれ":
-        //        orderType = OrderStatus.TURN_RIGHT;
-        //        break;
-        //    case "ひだりにまわれ":
-        //        orderType = OrderStatus.TURN_LEFT;
-        //        break;
+        //    if (args.text != text) continue;
+        //    orderType = OrderStatus.MOVE;
+        //    break;
         //}
 
+        //認識したキーワードで処理判定
+        switch (args.text)
+        {
+            case "すすめ":
+            case "すすんで":
+            case "ぜんしんせよ":
+            case "いどうしろ":
+                orderType = OrderStatus.MOVE;
+                break;
+            case "とまれ":
+                orderType = OrderStatus.STOP;
+                break;
+            case "じばくしろ":
+                orderType = OrderStatus.MOVE;
+                break;
+            case "みぎにまわれ":
+                orderType = OrderStatus.TURN_RIGHT;
+                break;
+            case "ひだりにまわれ":
+                orderType = OrderStatus.TURN_LEFT;
+                break;
+        }
+
         // ワーカーリスト取得
-        var workerList = GameObject.FindGameObjectsWithTag("Worker");
+        var workerList = GameObject.FindGameObjectsWithTag("Robot");
 
         // 全部のワーカにオーダーを出す
         foreach (var worker in workerList)
@@ -118,5 +108,5 @@ public class SpeechManager : MonoBehaviour
 
     }
 
-//#endif
+#endif
 }
