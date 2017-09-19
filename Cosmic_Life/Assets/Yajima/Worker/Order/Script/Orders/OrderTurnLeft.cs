@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
+// 左回転命令クラス
 public class OrderTurnLeft : Order {
 
     [SerializeField]

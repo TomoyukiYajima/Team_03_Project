@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 停止命令クラス
 public class OrderStop : Order {
 
     //// Use this for initialization

@@ -8,38 +8,18 @@ using UnityEditor;
 
 public class OrderList : MonoBehaviour {
 
-    //[SerializeField]
-    //private List<OrderStatus> m_OrderStatus;
-    //[SerializeField]
-    //private List<Order> m_Orders;
-
+    // 命令状態リスト
     [SerializeField]
     private OrderStatus[] m_OrderStatus;
+    // 命令リスト
     [SerializeField]
     private Order[] m_Orders;
-    //private Order[] m_Orders;
-
-    //// Use this for initialization
-    //void Start () {
-
-    //}
-
-    //// Update is called once per frame
-    //void Update () {
-
-    //}
 
     // 命令状態リストの取得
-    public OrderStatus[] GetOrderStatus()
-    {
-        return m_OrderStatus;
-    }
+    public OrderStatus[] GetOrderStatus() { return m_OrderStatus; }
 
-    // 命令の取得
-    public Order[] GetOrders()
-    {
-        return m_Orders;
-    }
+    // 命令リストの取得
+    public Order[] GetOrders() { return m_Orders; }
 
     #region エディターのシリアライズ変更
     // 変数名を日本語に変換する機能

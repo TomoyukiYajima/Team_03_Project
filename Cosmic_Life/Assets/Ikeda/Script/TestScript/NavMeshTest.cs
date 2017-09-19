@@ -43,7 +43,7 @@ public class NavMeshTest : MonoBehaviour
     //プレイヤーへの注視点
     Transform m_PlayerLookPoint;
 
-    //自信の目の位置
+    //自身の目の位置
     Transform m_EyePoint;
 
     //状態
@@ -192,7 +192,6 @@ public class NavMeshTest : MonoBehaviour
 
         return true;
     }
-
 
 
     public void OnDrawGizmos()

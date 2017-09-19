@@ -88,7 +88,13 @@ public class SpeechManager : MonoBehaviour
         }
 
         // ワーカーリスト取得
+<<<<<<< HEAD
         var workerList = GameObject.FindGameObjectsWithTag("Robot");
+=======
+        List<GameObject> workerList = new List<GameObject>();
+        workerList.AddRange(GameObject.FindGameObjectsWithTag("Worker"));
+        workerList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+>>>>>>> 8a3648ddc19c6bb4f2d4fb704ef80576ea553de7
 
         // 全部のワーカにオーダーを出す
         foreach (var worker in workerList)
