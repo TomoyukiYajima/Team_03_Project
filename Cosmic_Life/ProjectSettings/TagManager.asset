@@ -8,6 +8,7 @@ TagManager:
   - StageObject
   - Ground
   - Robot
+  - Camera
   layers:
   - Default
   - TransparentFX
