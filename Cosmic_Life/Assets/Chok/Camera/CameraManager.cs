@@ -11,6 +11,11 @@ public class CameraManager : MonoBehaviour
 
     //private int m_currentCamera = 0;
 
+    public void Start()
+    {
+        m_currentCamera = GameObject.FindGameObjectWithTag("MainCamera");
+    }
+
     public void Update()
     {
         //if (Input.GetKeyDown(KeyCode.O))
@@ -53,6 +58,7 @@ public class CameraManager : MonoBehaviour
         m_currentCamera = camera;
         // 新しいカメラをアクティブする
         m_currentCamera.SetActive(true);
+        m_currentCamera.transform.GetChild(0).gameObject.SetActive(true);
         // フェードイン
         FadeMgr.Instance.FadeIn(0.5f);
     }
