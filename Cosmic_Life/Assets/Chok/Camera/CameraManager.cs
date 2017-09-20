@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField, Tooltip("カメラリスト")]
-    private List<GameObject> m_cameraList;
+    [SerializeField, Tooltip("カメラリスト")] private List<GameObject> m_cameraList;
 
     private GameObject m_currentCamera;
 
@@ -28,6 +28,10 @@ public class CameraManager : MonoBehaviour
     {
         StartCoroutine(SwitchingCamera(camera));
     }
+    public void SwitchCamera(Transform camera,float duration)
+    {
+        StartCoroutine(SwitchingCamera(camera, duration));
+    }
 
     //private IEnumerator SwitchingCamera(int cameraNum)
     //{
@@ -46,6 +50,12 @@ public class CameraManager : MonoBehaviour
     //    // フェードイン
     //    FadeMgr.Instance.FadeIn(0.5f);
     //}
+
+    /// <summary>
+    /// カメラを切り替える
+    /// </summary>
+    /// <param name="camera">カメラオブジェクト</param>
+    /// <returns></returns>
     private IEnumerator SwitchingCamera(GameObject camera)
     {
         // フェードアウト
@@ -61,6 +71,18 @@ public class CameraManager : MonoBehaviour
         m_currentCamera.transform.GetChild(0).gameObject.SetActive(true);
         // フェードイン
         FadeMgr.Instance.FadeIn(0.5f);
+    }
+
+    /// <summary>
+    /// カメラを切り替える（移動）
+    /// </summary>
+    /// <param name="obj">目標トランスフォーム</param>
+    /// <param name="duration">時間</param>
+    /// <returns></returns>
+    private IEnumerator SwitchingCamera(Transform obj,float duration)
+    {
+        m_currentCamera.transform.DOMove(obj.position, duration).SetEase(Ease.OutCubic);
+        yield return new WaitForSeconds(1.0f);
     }
 
     public void AddCamera(GameObject camera)
