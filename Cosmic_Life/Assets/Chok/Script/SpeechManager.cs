@@ -13,7 +13,7 @@ public class SpeechManager : MonoBehaviour
 
     private List<string> m_moveKeyword = new List<string>();
 
-//#if !UNITY_EDITOR
+#if !UNITY_EDITOR
     void Start()
     {
         string path = "Assets/Resources/";
@@ -88,27 +88,31 @@ public class SpeechManager : MonoBehaviour
         }
 
         // ワーカーリスト取得
+<<<<<<< HEAD
+        var workerList = GameObject.FindGameObjectsWithTag("Robot");
+=======
         List<GameObject> workerList = new List<GameObject>();
-        workerList.AddRange(GameObject.FindGameObjectsWithTag("Robot"));
+        workerList.AddRange(GameObject.FindGameObjectsWithTag("Worker"));
         workerList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+>>>>>>> 8a3648ddc19c6bb4f2d4fb704ef80576ea553de7
 
         // 全部のワーカにオーダーを出す
         foreach (var worker in workerList)
         {
-            // IRobotEventが実装されていなければreturn
-            if (!ExecuteEvents.CanHandleEvent<IRobotEvent>(worker))
+            // IWorkerEventが実装されていなければreturn
+            if (!ExecuteEvents.CanHandleEvent<IWorkerEvent>(worker))
             {
-                Debug.Log("IRobotEvent未実装");
+                Debug.Log("IWorkerEvent未実装");
                 return;
             }
 
-            ExecuteEvents.Execute<IRobotEvent>(
+            ExecuteEvents.Execute<IWorkerEvent>(
                 worker,
                 null,
-                (receive, y) => receive.onOrder(orderType,OrderDirection.FORWARD));
+                (receive, y) => receive.onOrder(orderType));
         }
 
     }
 
-//#endif
+#endif
 }

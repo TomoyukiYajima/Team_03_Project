@@ -2,60 +2,72 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraRay : MonoBehaviour
-{
+public class CameraRay : MonoBehaviour {
     [SerializeField] private float m_rayDist;
     [SerializeField] private CameraManager m_cameraManager;
 
     [SerializeField] private GameObject m_colliderObj;
 
-    // Use this for initialization
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
+	// Use this for initialization
+	void Start () {
+	}
+	
+	// Update is called once per frame
+	void Update () {
         Ray ray = new Ray(transform.position, transform.forward * m_rayDist);
         RaycastHit hitInfo;
         Physics.Raycast(ray, out hitInfo, m_rayDist);
 
-        if (hitInfo.collider == null)
+        if(m_colliderObj != hitInfo.collider)
         {
-            if (m_colliderObj != null)
+            if(m_colliderObj != null)
             {
-                StageObject material = null;
-                if ((material = m_colliderObj.GetComponent<StageObject>()) != null)
+                var materials = m_colliderObj.GetComponent<MeshRenderer>().materials;
+                for (int i = 0; i != materials.Length; ++i)
                 {
-                    material.EndFlashEmission();
+                    materials[i].DisableKeyword("_EMISSION");
                 }
+
+            }
+
+            if (hitInfo.collider != null)
+            {
+                m_colliderObj = hitInfo.collider.gameObject;
+
+                var materials = m_colliderObj.GetComponent<MeshRenderer>().materials;
+                for (int i = 0; i != materials.Length; ++i)
+                {
+                    materials[i].EnableKeyword("_EMISSION");
+                    materials[i].SetColor("_EmissionColor", new Color(1.0f, 1.0f, 1.0f));
+                }
+
+            }
+            else
+            {
                 m_colliderObj = null;
             }
-            return;
-        }
-        else if (m_colliderObj != hitInfo.collider.gameObject)
-        {
-            m_colliderObj = hitInfo.collider.gameObject;
 
-            StageObject material = null;
-            if ((material = m_colliderObj.GetComponent<StageObject>()) != null)
-            {
-                material.FlashEmission(new Color(0.5f, 0.5f, 0.5f), 1.0f);
-            }
         }
 
         if (hitInfo.collider == null) return;
 
         if (hitInfo.collider.tag == "Camera" || hitInfo.collider.tag == "Robot")
         {
+            var mesh = hitInfo.collider.gameObject.GetComponent<MeshRenderer>().materials;
+
+            for (int i = 0; i != mesh.Length; ++i)
+            {
+                mesh[i].EnableKeyword("_EMISSION");
+                mesh[i].SetColor("_EmissionColor", new Color(0.5f,0.5f,0.5f));
+            }
+
             if (Input.GetKeyDown(KeyCode.J))
             {
 
-                m_cameraManager.SwitchCamera(hitInfo.collider.gameObject.transform, 0.5f);
+                m_cameraManager.SwitchCamera(hitInfo.collider.gameObject);
             }
         }
-    }
+	}
 
     private void OnDrawGizmos()
     {
