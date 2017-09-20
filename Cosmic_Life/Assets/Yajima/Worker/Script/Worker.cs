@@ -49,6 +49,8 @@ public class Worker : MonoBehaviour, IWorkerEvent
         // 命令の実行
         //m_Orders[m_OrderState](time, gameObject);
         m_Orders[m_OrderState].Action(time, gameObject);
+        // 命令が終了していれば、NULLの状態に変更する
+        //if (m_Orders[m_OrderState].IsEndOrder()) ChangeOrder(OrderStatus.NULL);
 
         // 命令(仮)　音声認識でプレイヤーから命令してもらう
         // OKボタンが押されたら、移動命令を行う

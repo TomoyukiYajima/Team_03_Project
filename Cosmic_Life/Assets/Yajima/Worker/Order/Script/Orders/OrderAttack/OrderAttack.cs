@@ -21,14 +21,14 @@ public class OrderAttack : Order {
     // 時間
     private float m_Timer;
     // 攻撃が終了したか
-    private bool m_IsAttack;
+    //private bool m_IsAttack;
     // 
     protected string m_OrderText = "Attack";
 
     // Use this for initialization
     public override void Start()
     {
-        m_InitAttackPosition = this.transform.position;
+        //m_InitAttackPosition = this.transform.position;
     }
 
     //// Update is called once per frame
@@ -42,6 +42,7 @@ public class OrderAttack : Order {
 
         // 初期位置
         m_InitAttackPosition = m_Collider.transform.position;
+        //print(m_Collider.transform.position);
 
         m_Collider.SetActive(true);
         // Tweenの移動
@@ -58,6 +59,7 @@ public class OrderAttack : Order {
         if (m_Timer < m_AttackSpeed) return;
         // 攻撃判定を非アクティブ状態に変更する
         m_Collider.SetActive(false);
+        m_Collider.transform.position = m_InitAttackPosition;
         m_IsEndOrder = true;
     }
 
@@ -65,7 +67,10 @@ public class OrderAttack : Order {
     {
         base.EndAction();
 
+        //print(m_Collider.transform.position);
+
         //m_Collider.SetActive(false);
         m_Collider.transform.position = m_InitAttackPosition;
+        //m_Collider.transform.position = m_InitAttackPosition;
     }
 }

@@ -8,7 +8,7 @@ public class ObjectChecker : MonoBehaviour
     [SerializeField]
     private float m_CheckRadius = 10.0f;
     // ステージオブジェクト格納リスト
-    private List<GameObject> m_StageObjects = 
+    private List<GameObject> m_StageObjects =
         new List<GameObject>();
 
     // Use this for initialization
@@ -37,7 +37,8 @@ public class ObjectChecker : MonoBehaviour
         var stageObj = other.gameObject.GetComponent<StageObject>();
         // ステージオブジェクト以外なら返す
         if (stageObj == null) return;
-        stageObj.EnableEmission(new Color(0.5f, 0.5f, 0.5f));
+        //stageObj.EnableEmission(new Color(0.5f, 0.5f, 0.5f));
+        stageObj.FlashEmission(new Color(0.5f, 0.5f, 0.5f), 0.5f);
         // 配列に追加
         m_StageObjects.Add(other.gameObject);
     }
@@ -48,9 +49,10 @@ public class ObjectChecker : MonoBehaviour
         var stageObj = other.gameObject.GetComponent<StageObject>();
         // ステージオブジェクト以外なら返す
         if (stageObj == null) return;
-        stageObj.DisableEmission();
+        //stageObj.DisableEmission();
+        stageObj.EndFlashEmission();
         // 配列から削除
-        for(int i = 0; i != m_StageObjects.Count; ++i)
+        for (int i = 0; i != m_StageObjects.Count; ++i)
         {
             if (m_StageObjects[i] != stageObj.gameObject) continue;
             // 同一のオブジェクトだったら、配列から削除する
