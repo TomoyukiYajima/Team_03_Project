@@ -79,10 +79,10 @@ public class Enemy : MonoBehaviour {
         m_StateList = this.transform.Find("StateList").GetComponent<EnemyStateList>();
 
         // 命令の追加
-        for (int i = 0; i != m_StateList.GetOrderStatus().Length; ++i)
+        for (int i = 0; i != m_StateList.GetEnemyStatus().Length; ++i)
         {
-            var orders = m_StateList.GetEnemyOrder()[i];
-            m_Orders.Add(m_StateList.GetOrderStatus()[i], (deltaTime, gameObj) => { orders.Action(deltaTime, gameObj); });
+            var orders = m_StateList.GetEnemyState()[i];
+            m_Orders.Add(m_StateList.GetEnemyStatus()[i], (deltaTime, gameObj) => { orders.Action(deltaTime, gameObj); });
         }
     }
 
@@ -103,9 +103,9 @@ public class Enemy : MonoBehaviour {
     protected bool CheckrState(EnemyStatus order)
     {
         // 状態の追加
-        for (int i = 0; i != m_StateList.GetOrderStatus().Length; ++i)
+        for (int i = 0; i != m_StateList.GetEnemyStatus().Length; ++i)
         {
-            var orderState = m_StateList.GetOrderStatus()[i];
+            var orderState = m_StateList.GetEnemyStatus()[i];
             // 同一の状態だった場合はtrueを返す
             if (order == orderState) return true;
         }

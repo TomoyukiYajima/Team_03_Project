@@ -179,7 +179,7 @@ GameObject:
   - component: {fileID: 52855877}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1040,6 +1040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa9c2541eb525b544ab4cee1f223da07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_WorkerName: Worker
 --- !u!1001 &841238045
 Prefab:
   m_ObjectHideFlags: 0
@@ -1539,6 +1540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e8151fb02cebe4a8a1bcfea7f98542, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_WorkerName: Worker
   m_MainCamera: {fileID: 1158483156}
   m_BlowOffTime: 3
 --- !u!1 &1158483156

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SoundEnemy : MonoBehaviour, IWorkerEvent {
+public class SoundEnemy : MonoBehaviour, IRobotEvent {
 
     public NavMeshAgent m_SoundAgent;
 
@@ -18,7 +18,7 @@ public class SoundEnemy : MonoBehaviour, IWorkerEvent {
 		
 	}
 
-    public void onOrder(OrderStatus order)
+    public void onOrder(OrderStatus order, OrderDirection direction)
     {
         print("追跡!!!");
 

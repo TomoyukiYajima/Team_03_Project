@@ -21,12 +21,12 @@ public class EnemyStateList : MonoBehaviour {
 		
 	}
 
-    public EnemyStatus[] GetOrderStatus()
+    public EnemyStatus[] GetEnemyStatus()
     {
         return m_EnemyStatus;
     }
 
-    public EnemyState[] GetEnemyOrder()
+    public EnemyState[] GetEnemyState()
     {
         return m_EnemyState;
     }
