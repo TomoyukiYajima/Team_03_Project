@@ -4,6 +4,12 @@
 /Cosmic_Life/[Bb]uild/
 /Cosmic_Life/[Bb]uilds/
 
+/SpeechSample/[Ll]ibrary/
+/SpeechSample/[Tt]emp/
+/SpeechSample/[Oo]bj/
+/SpeechSample/[Bb]uild/
+/SpeechSample/[Bb]uilds/
+
 # Visual Studio 2015 cache directory
 /Cosmic_Life/.vs/
 
