@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class Worker : MonoBehaviour, IWorkerEvent
+public class Worker : MonoBehaviour, IRobotEvent
 {
 
     // ワーカーの名前
@@ -26,16 +26,31 @@ public class Worker : MonoBehaviour, IWorkerEvent
     //    new Dictionary<OrderStatus, Action<float, GameObject>>();
     private Dictionary<OrderStatus, Order> m_Orders =
         new Dictionary<OrderStatus, Order>();
+
+    private Dictionary<OrderStatus, Dictionary<DirectionNumber, Order>> m_Hoge =
+        new Dictionary<OrderStatus, Dictionary<DirectionNumber, Order>>();
+
+    private Dictionary<DirectionNumber, Order> m_Piyo =
+        new Dictionary<DirectionNumber, Order>();
+
     // 命令リスト
     protected OrderList m_OrderList;
     // 命令実行時間
     protected float m_StateTimer = 0.0f;
+
+    // 剛体
+    protected Rigidbody m_Rigidbody;
 
     // Use this for initialization
     public virtual void Start()
     {
         // 命令の設定
         SetOrder();
+
+        m_Rigidbody = this.GetComponent<Rigidbody>();
+
+        m_Hoge.Add(OrderStatus.ATTACK, m_Piyo);
+        m_Hoge[OrderStatus.ATTACK][DirectionNumber.FORWARD].Action(1.0f, gameObject);
     }
 
     // Update is called once per frame
@@ -60,21 +75,24 @@ public class Worker : MonoBehaviour, IWorkerEvent
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN_LEFT);
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN_RIGHT);
 
-        //// 持ち上げサンプル
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
+        // 持ち上げサンプル
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.PULL_OUT);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
 
         // 攻撃サンプル
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK_HIGH);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_LOW);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK_HIGH);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_LOW);
 
         m_StateTimer += time;
 
+        m_Rigidbody.velocity = Vector3.zero;
+
         // 接地していない場合は、重力加算
-        if (!m_IsGround)
-        {
-            this.transform.position += Vector3.down * 9.8f * time;
-        }
+        //if (!m_IsGround)
+        //{
+        //    this.transform.position += Vector3.down * 9.8f * time;
+        //}
     }
 
     // 命令の設定を行います
@@ -114,7 +132,7 @@ public class Worker : MonoBehaviour, IWorkerEvent
         m_Orders[m_OrderState].StartAction(gameObject);
     }
 
-    public void onOrder(OrderStatus order)
+    public void onOrder(OrderStatus order, OrderDirection dir)
     {
         ChangeOrder(order);
     }
