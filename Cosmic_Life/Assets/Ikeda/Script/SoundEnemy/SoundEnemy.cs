@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SoundEnemy : MonoBehaviour, IRobotEvent {
+public class SoundEnemy : MonoBehaviour, IEnemyEvent {
 
     public NavMeshAgent m_SoundAgent;
 
@@ -18,7 +18,7 @@ public class SoundEnemy : MonoBehaviour, IRobotEvent {
 		
 	}
 
-    public void onOrder(OrderStatus order, OrderDirection direction)
+    public void onHear()
     {
         print("追跡!!!");
 
@@ -27,4 +27,10 @@ public class SoundEnemy : MonoBehaviour, IRobotEvent {
             m_SoundAgent.destination = GameObject.FindGameObjectWithTag("Player").transform.position;
         }
     }
+
+    public void onDamage(int amount)
+    {
+
+    }
+
 }
