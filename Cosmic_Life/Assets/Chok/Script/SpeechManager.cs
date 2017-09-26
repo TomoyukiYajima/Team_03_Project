@@ -96,13 +96,13 @@ public class SpeechManager : MonoBehaviour
         foreach (var worker in workerList)
         {
             // IRobotEventが実装されていなければreturn
-            if (!ExecuteEvents.CanHandleEvent<IRobotEvent>(worker))
+            if (!ExecuteEvents.CanHandleEvent<IOrderEvent>(worker))
             {
                 Debug.Log("IRobotEvent未実装");
                 return;
             }
             
-            ExecuteEvents.Execute<IRobotEvent>(
+            ExecuteEvents.Execute<IOrderEvent>(
                 worker,
                 null,
                 (receive, y) => receive.onOrder(orderType, OrderDirection.FORWARD));
@@ -110,5 +110,16 @@ public class SpeechManager : MonoBehaviour
 
     }
 
+
+    private void OnApplicationQuit()
+    {
+        OnDestroy();
+    }
+
+    private void OnDestroy()
+    {
+        m_Recognizer.OnPhraseRecognized -= OnPhraseRecognized;
+        m_Recognizer.Start();
+    }
 //#endif
 }
