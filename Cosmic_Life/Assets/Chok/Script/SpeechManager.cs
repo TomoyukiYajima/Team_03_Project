@@ -101,11 +101,11 @@ public class SpeechManager : MonoBehaviour
                 Debug.Log("IRobotEvent未実装");
                 return;
             }
-
+            
             ExecuteEvents.Execute<IRobotEvent>(
                 worker,
                 null,
-                (receive, y) => receive.onOrder(orderType,OrderDirection.FORWARD));
+                (receive, y) => receive.onOrder(orderType, OrderDirection.FORWARD));
         }
 
     }
