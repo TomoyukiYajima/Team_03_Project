@@ -6,6 +6,8 @@ public class Order : MonoBehaviour {
 
     // 命令が終了したか
     protected bool m_IsEndOrder = false;
+    // 格納された命令番号
+    protected OrderNumber m_OrderNumber = OrderNumber.ONE;
 
 	// Use this for initialization
 	public virtual void Start () {
@@ -35,4 +37,7 @@ public class Order : MonoBehaviour {
 
     // 命令が終了したかを返します
     public bool IsEndOrder() { return m_IsEndOrder; }
+
+    // 命令番号を設定します
+    public void SetOrderNumber(OrderNumber number) { m_OrderNumber = number; }
 }

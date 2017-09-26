@@ -7,14 +7,14 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class Worker : MonoBehaviour, IRobotEvent
+public class Worker : MonoBehaviour, IOrderEvent
 {
 
     //public enum OrderOption {
     //    NONE        = 1 << 0,
     //    DIRECTION   = 1 << 1
     //}
-
+    #region 変数
     // ワーカーの名前
     [SerializeField]
     private string m_WorkerName = "Worker";
@@ -51,7 +51,10 @@ public class Worker : MonoBehaviour, IRobotEvent
 
     // 剛体
     protected Rigidbody m_Rigidbody;
+    #endregion
 
+    #region 関数
+    #region 基盤関数
     // Use this for initialization
     public virtual void Start()
     {
@@ -70,9 +73,14 @@ public class Worker : MonoBehaviour, IRobotEvent
         // デルタタイムの取得
         float time = Time.deltaTime;
         // 命令の実行
-        m_Orders[OrderNumber.ONE][m_OrderStatus[OrderNumber.ONE]].Action(time, gameObject);
-        m_Orders[OrderNumber.TWO][m_OrderStatus[OrderNumber.TWO]].Action(time, gameObject);
-        m_Orders[OrderNumber.THREE][m_OrderStatus[OrderNumber.THREE]].Action(time, gameObject);
+        for(int i = 0; i != m_OrderNumbers.Count; ++i)
+        {
+            m_Orders[m_OrderNumbers[i]][m_OrderStatus[m_OrderNumbers[i]]].Action(time, gameObject);
+        }
+
+        //m_Orders[OrderNumber.ONE][m_OrderStatus[OrderNumber.ONE]].Action(time, gameObject);
+        //m_Orders[OrderNumber.TWO][m_OrderStatus[OrderNumber.TWO]].Action(time, gameObject);
+        //m_Orders[OrderNumber.THREE][m_OrderStatus[OrderNumber.THREE]].Action(time, gameObject);
 
         // 命令が終了していれば、NULLの状態に変更する
         //if (m_Orders[m_OrderState].IsEndOrder()) ChangeOrder(OrderStatus.NULL);
@@ -111,7 +119,9 @@ public class Worker : MonoBehaviour, IRobotEvent
         //    this.transform.position += Vector3.down * 9.8f * time;
         //}
     }
+    #endregion
 
+    #region 命令関数
     // 命令の設定を行います
     protected virtual void SetOrder()
     {
@@ -121,55 +131,27 @@ public class Worker : MonoBehaviour, IRobotEvent
         m_OrderNumbers.Add(OrderNumber.ONE);
         m_OrderNumbers.Add(OrderNumber.TWO);
         m_OrderNumbers.Add(OrderNumber.THREE);
-        // 追加
-        //m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
-        //m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
-        //m_Orders.Add(OrderNumber.THREE, m_OrdersThree);
-        //// 追加
-        //m_OrderStatus.Add(OrderNumber.ONE, OrderStatus.NULL);
-        //m_OrderStatus.Add(OrderNumber.TWO, OrderStatus.NULL);
-        //m_OrderStatus.Add(OrderNumber.THREE, OrderStatus.NULL);
-
         // 命令の追加
-        //for (int i = 0; i != m_OrderNumbers.Count; ++i)
-        //{
-        //    for (int j = 0; j != m_OrderList.GetOrderStatus(m_OrderNumbers[i]).Length; ++j)
-        //    {
-        //        var orders = m_OrderList.GetOrders(m_OrderNumbers[i])[j];
-        //        //m_Orders.Add(m_OrderList.GetOrderStatus(m_OrderNumbers[i])[j], orders);
-        //    }
-        //}
-        // 1
-        for (int i = 0; i != m_OrderList.GetOrderStatus(OrderNumber.ONE).Length; ++i)
-        {
-            var orders = m_OrderList.GetOrders(OrderNumber.ONE)[i];
-            m_OrdersOne.Add(m_OrderList.GetOrderStatus(OrderNumber.ONE)[i], orders);
-
-            //m_Orders.Add(m_OrderList.GetOrderStatus()[i], (deltaTime, gameObj) => { orders.Action(deltaTime, gameObj); });
-            // 下記だと、iの値が変に加算されてしまうので注意！
-            // m_Orders.Add(m_OrderList.GetOrderStatus()[i], (deltaTime) => { m_OrderList.GetOrders()[i].Action(); });
-        }
-        // 2
-        for (int i = 0; i != m_OrderList.GetOrderStatus(OrderNumber.TWO).Length; ++i)
-        {
-            var orders = m_OrderList.GetOrders(OrderNumber.TWO)[i];
-            m_OrdersTwo.Add(m_OrderList.GetOrderStatus(OrderNumber.TWO)[i], orders);
-        }
-        // 3
-        for (int i = 0; i != m_OrderList.GetOrderStatus(OrderNumber.THREE).Length; ++i)
-        {
-            var orders = m_OrderList.GetOrders(OrderNumber.THREE)[i];
-            m_OrdersThree.Add(m_OrderList.GetOrderStatus(OrderNumber.THREE)[i], orders);
-        }
-
-        // 追加
         m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
         m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
         m_Orders.Add(OrderNumber.THREE, m_OrdersThree);
-        // 追加
+        // 命令状態の追加
         m_OrderStatus.Add(OrderNumber.ONE, OrderStatus.NULL);
         m_OrderStatus.Add(OrderNumber.TWO, OrderStatus.NULL);
         m_OrderStatus.Add(OrderNumber.THREE, OrderStatus.NULL);
+
+        // 命令の追加
+        for (int i = 0; i != m_OrderNumbers.Count; ++i)
+        {
+            // 命令番号の数だけ追加する
+            for (int j = 0; j != m_OrderList.GetOrderStatus(m_OrderNumbers[i]).Length; ++j)
+            {
+                var orders = m_OrderList.GetOrders(m_OrderNumbers[i])[j];
+                m_Orders[m_OrderNumbers[i]].Add(m_OrderList.GetOrderStatus(m_OrderNumbers[i])[j], orders);
+                // 番号の設定
+                m_Orders[m_OrderNumbers[i]][m_OrderStatus[m_OrderNumbers[i]]].SetOrderNumber(m_OrderNumbers[i]);
+            }
+        }
     }
 
     // public virtual void ChangeOrder(OrderStatus order, OrderNumber number = OrderNumber.ONE)
@@ -233,18 +215,6 @@ public class Worker : MonoBehaviour, IRobotEvent
         m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir);
     }
 
-    // イベントでの呼び出し
-    public void onOrder(OrderStatus order)
-    {
-        ChangeOrder(order);
-    }
-
-    // イベントでの呼び出し(方向指定)
-    public void onOrder(OrderStatus order, OrderDirection dir)
-    {
-        ChangeOrder(order, dir);
-    }
-
     // 指定した命令があるかの確認を行います
     protected bool CheckrOrder(OrderStatus order, OrderNumber number)
     {
@@ -258,7 +228,30 @@ public class Worker : MonoBehaviour, IRobotEvent
         // 同一の命令がない
         return false;
     }
+    #endregion
 
+    #region イベント関数
+    #region ロボットインターフェース
+    // イベントでの呼び出し
+    public void onOrder(OrderStatus order)
+    {
+        ChangeOrder(order);
+    }
+
+    // イベントでの呼び出し(方向指定)
+    public void onOrder(OrderStatus order, OrderDirection dir)
+    {
+        ChangeOrder(order, dir);
+    }
+    // イベントでの終了処理呼び出し
+    public void endOrder()
+    {
+        ChangeOrder(OrderStatus.NULL);
+    }
+    #endregion
+    #endregion
+
+    #region ジャミング関数
     // ジャミングかどうか
     public void Jamming(bool isJamming)
     {
@@ -287,7 +280,9 @@ public class Worker : MonoBehaviour, IRobotEvent
     {
         m_IsJamming = false;
     }
+    #endregion
 
+    #region 衝突判定関数
     public void OnCollisionEnter(Collision collision)
     {
         // 地面との判定
@@ -301,7 +296,8 @@ public class Worker : MonoBehaviour, IRobotEvent
         if (collision.transform.tag != "Ground") return;
         m_IsGround = false;
     }
-
+    #endregion
+    #endregion
 
     //    #region エディターのシリアライズ変更
     //    // 変数名を日本語に変換する機能
