@@ -14,8 +14,12 @@ public class CameraFollow : MonoBehaviour {
 	void Update () {
         float x = 0.0f;
         float y = 0.0f;
-        x = Input.GetAxis("Horizontal");
-        y = Input.GetAxis("RVertical");
+        x = Input.GetAxis("HorizontalR");
+        y = Input.GetAxis("VerticalR");
+        x = Input.GetAxis("HorizontalD");
+        y = Input.GetAxis("VerticalD");
+        x = Input.GetAxis("Trigger");
+        y = Input.GetAxis("Trigger");
 
 
         transform.Rotate(y, x, 0);
