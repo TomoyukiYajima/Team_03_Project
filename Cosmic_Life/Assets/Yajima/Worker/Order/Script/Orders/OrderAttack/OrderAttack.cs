@@ -46,7 +46,7 @@ public class OrderAttack : Order {
 
         m_Collider.SetActive(true);
         // Tweenの移動
-        m_Collider.transform.DOMove(m_StopPoint.position, m_AttackSpeed);
+        m_Collider.transform.DOLocalMove(m_StopPoint.localPosition, m_AttackSpeed);
         m_Timer = 0.0f;
     }
 
