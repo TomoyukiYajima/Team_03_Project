@@ -15,6 +15,8 @@ public class StageObject : MonoBehaviour {
     private Material[] m_Materials;
     // 色の初期値配列
     private Color[] m_Colors;
+    // 剛体
+    private Rigidbody m_Rigidbody;
     // 点滅するか
     private bool m_IsFlash = false;
     // 接地しているか
@@ -35,11 +37,15 @@ public class StageObject : MonoBehaviour {
         //{
         //    m_Colors[i] = m_Materials[i].color;
         //}
+
+        m_Rigidbody = this.GetComponent<Rigidbody>();
     }
 	
 	// Update is called once per frame
 	void Update () {
         m_isGround = false;
+
+        m_Rigidbody.velocity = Vector3.zero;
 	}
 
     // 自己発光の設定を行います

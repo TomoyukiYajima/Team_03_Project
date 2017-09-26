@@ -5,6 +5,10 @@ using UnityEngine;
 // 持ち下げ命令クラス
 public class OrderTakeDown : Order {
 
+    // 置くポイント
+    [SerializeField]
+    private Transform m_Point;
+
     // 
     //private bool m_LiftObj;
 
@@ -29,7 +33,16 @@ public class OrderTakeDown : Order {
             return;
         }
         var stageObj = liftObj.GetChild(0).GetComponent<StageObject>();
-        stageObj.transform.position -= Vector3.up * 1.0f;
+        // 相手の持ち上げポイントを取得する
+        var point = stageObj.transform.Find("LiftPoint");
+        float length = Mathf.Abs(point.position.y - m_Point.transform.position.y);
+        stageObj.transform.position += Vector3.down * length;
+        //stageObj.transform.position -= Vector3.up * 1.0f;
+        // 剛体のキネマティックをオフにする
+        var body = stageObj.GetComponent<Rigidbody>();
+        body.isKinematic = false;
+        // 重力をオンにする
+        body.useGravity = true;
         // ステージオブジェクトの親を初期化する
         stageObj.InitParent();
     }

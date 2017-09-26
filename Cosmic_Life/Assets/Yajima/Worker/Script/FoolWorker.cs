@@ -14,23 +14,23 @@ public class FoolWorker : Worker {
 
     //}
 
-    public override void ChangeOrder(OrderStatus order)
-    {
-        int value1 = Random.Range(0, 100 + 1);
-        int value2 = 50;
+    //public override void ChangeOrder(OrderStatus order)
+    //{
+    //    int value1 = Random.Range(0, 100 + 1);
+    //    int value2 = 50;
 
-        var newOrder = order;
+    //    var newOrder = order;
 
-        if(value2 <= value1)
-        {
-            // オーダーリストの中から、ランダムで選択(完全に別の命令を選択する)
-            while (newOrder == order)
-            {
-                int number = Random.Range(0, m_OrderList.GetOrderStatus().Length);
-                newOrder = m_OrderList.GetOrderStatus()[number];
-            }
-        }
+    //    if(value2 <= value1)
+    //    {
+    //        // オーダーリストの中から、ランダムで選択(完全に別の命令を選択する)
+    //        while (newOrder == order)
+    //        {
+    //            int number = Random.Range(0, m_OrderList.GetOrderStatus().Length);
+    //            newOrder = m_OrderList.GetOrderStatus()[number];
+    //        }
+    //    }
 
-        base.ChangeOrder(newOrder);
-    }
+    //    base.ChangeOrder(newOrder);
+    //}
 }

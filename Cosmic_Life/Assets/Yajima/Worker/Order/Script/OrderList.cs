@@ -8,18 +8,70 @@ using UnityEditor;
 
 public class OrderList : MonoBehaviour {
 
+    // 命令状態リスト1
+    [SerializeField]
+    private OrderStatus[] m_OrderOneStatus;
+    // 命令状態リスト2
+    [SerializeField]
+    private OrderStatus[] m_OrderTwoStatus;
+    // 命令状態リスト3
+    [SerializeField]
+    private OrderStatus[] m_OrderThreeStatus;
     // 命令状態リスト
+    private Dictionary<OrderNumber, OrderStatus[]> m_OrderStatus =
+        new Dictionary<OrderNumber, OrderStatus[]>();
+    // 命令リスト1
     [SerializeField]
-    private OrderStatus[] m_OrderStatus;
+    private Order[] m_OrdersOne;
+    // 命令リスト2 
+    [SerializeField]
+    private Order[] m_OrdersTwo;
+    // 命令リスト3
+    [SerializeField]
+    private Order[] m_OrdersThree;
     // 命令リスト
-    [SerializeField]
-    private Order[] m_Orders;
+    private Dictionary<OrderNumber, Order[]> m_Orders =
+        new Dictionary<OrderNumber, Order[]>();
+
+    // Use this for initialization
+    void Start()
+    {
+        // 命令状態リストの追加
+        m_OrderStatus.Add(OrderNumber.ONE, m_OrderOneStatus);
+        m_OrderStatus.Add(OrderNumber.TWO, m_OrderTwoStatus);
+        m_OrderStatus.Add(OrderNumber.THREE, m_OrderThreeStatus);
+        // 命令リストの追加
+        m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
+        m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
+        m_Orders.Add(OrderNumber.THREE, m_OrdersThree);
+    }
+
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //}
 
     // 命令状態リストの取得
-    public OrderStatus[] GetOrderStatus() { return m_OrderStatus; }
+    //public OrderStatus[] GetOrderStatus() { return m_OrderOneStatus; }
+    public OrderStatus[] GetOrderStatus(OrderNumber number) { return m_OrderStatus[number]; }
 
     // 命令リストの取得
-    public Order[] GetOrders() { return m_Orders; }
+    public Order[] GetOrders(OrderNumber number) { return m_Orders[number]; }
+
+    // 指定の命令があるかを返します
+    public bool IsOrder(OrderNumber number, OrderStatus status)
+    {
+        //int state = 0;
+
+        // 加算
+        for(int i = 0; i != m_OrderStatus[number].Length; ++i)
+        {
+            if (m_OrderStatus[number][i] == status) return true;
+            //state += (int)m_OrderStatus[number][i];
+        }
+        // 命令がない
+        return false;
+    }
 
     #region エディターのシリアライズ変更
     // 変数名を日本語に変換する機能
@@ -30,13 +82,21 @@ public class OrderList : MonoBehaviour {
     [CanEditMultipleObjects]
     public class OrderListEditor : Editor
     {
-        SerializedProperty OrderStatus;
-        SerializedProperty Orders;
+        SerializedProperty OrderOneStatus;
+        SerializedProperty OrderTwoStatus;
+        SerializedProperty OrderThreeStatus;
+        SerializedProperty OrdersOne;
+        SerializedProperty OrdersTwo;
+        SerializedProperty OrdersThree;
 
         public void OnEnable()
         {
-            OrderStatus = serializedObject.FindProperty("m_OrderStatus");
-            Orders = serializedObject.FindProperty("m_Orders");
+            OrderOneStatus = serializedObject.FindProperty("m_OrderOneStatus");
+            OrderTwoStatus = serializedObject.FindProperty("m_OrderTwoStatus");
+            OrderThreeStatus = serializedObject.FindProperty("m_OrderThreeStatus");
+            OrdersOne = serializedObject.FindProperty("m_OrdersOne");
+            OrdersTwo = serializedObject.FindProperty("m_OrdersTwo");
+            OrdersThree = serializedObject.FindProperty("m_OrdersThree");
         }
 
         public override void OnInspectorGUI()
@@ -48,16 +108,25 @@ public class OrderList : MonoBehaviour {
             OrderList orders = target as OrderList;
 
             // エディタ上でのラベル表示
-            EditorGUILayout.LabelField("〇命令リスト");
-
-            // 配列
-            EditorGUILayout.PropertyField(OrderStatus, new GUIContent("命令"), true);
-            //EditorGUILayout.PropertyField(MovePoints, new GUIContent("徘徊ポイント"), true);
-
+            EditorGUILayout.LabelField("〇命令リスト1");
+            // 命令リスト1
+            EditorGUILayout.PropertyField(OrderOneStatus, new GUIContent("命令リスト"), true);
             EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(OrdersOne, new GUIContent("実行リスト"), true);
 
-            EditorGUILayout.LabelField("〇実行する命令");
-            EditorGUILayout.PropertyField(Orders, new GUIContent("実行"), true);
+            // エディタ上でのラベル表示
+            EditorGUILayout.LabelField("〇命令リスト2");
+            // 命令リスト1
+            EditorGUILayout.PropertyField(OrderTwoStatus, new GUIContent("命令リスト"), true);
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(OrdersTwo, new GUIContent("実行リスト"), true);
+
+            // エディタ上でのラベル表示
+            EditorGUILayout.LabelField("〇命令リスト3");
+            // 命令リスト1
+            EditorGUILayout.PropertyField(OrderThreeStatus, new GUIContent("命令リスト"), true);
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(OrdersThree, new GUIContent("実行リスト"), true);
 
             // Unity画面での変更を更新する(これがないとUnity画面で変更が表示されない)
             serializedObject.ApplyModifiedProperties();

@@ -19,12 +19,17 @@ public class OrderLift : Order {
     private ObjectChecker m_ObjectChecker;
     // 持ち上げオブジェクト確認用オブジェクト
     [SerializeField]
-    private CheckLiftObject m_CheckLiftObject;
+    protected CheckLiftObject m_CheckLiftObject;
+    // 持ち上げポイント
+    [SerializeField]
+    private Transform m_LiftPoint;
     // 持ち上げたか
-    private bool m_IsLift = false;
+    protected bool m_IsLift = false;
+
+    private bool m_isRotate = false;
 
     // 持ち上げるステージオブジェクト
-    private GameObject m_LiftObject;
+    protected GameObject m_LiftObject;
     // 計算リスト
     private Dictionary<LiftObjectNumber, Action<int>> m_LiftMoves =
         new Dictionary<LiftObjectNumber, Action<int>>();
@@ -52,6 +57,7 @@ public class OrderLift : Order {
         }
 
         m_IsLift = false;
+        m_isRotate = false;
 
         // プレイヤーとの距離を求める
         var player = GameObject.FindGameObjectWithTag("Player");
@@ -95,28 +101,66 @@ public class OrderLift : Order {
         print("Lift");
 
         if (m_IsLift) return;
-
-        if (m_CheckLiftObject.IsCheckLift(m_LiftObject))
-        {
-            m_LiftObject.transform.position += Vector3.up * 1.0f;
-            m_IsLift = true;
-            // 持ち上げたオブジェクトを、ロボットの持つオブジェクトに変更する
-            var liftObj = obj.transform.Find("LiftObject");
-            m_LiftObject.transform.parent = liftObj;
-            return;
-        }
-
+        // 持ち上げられるかのチェック
+        CheckLift(obj);
         // 移動
-        float speed = 3.0f;
-        var dis = m_LiftObject.transform.position - this.transform.position;
-        dis.y = 0.0f;
-        var direction = Vector3.Normalize(dis);
-        obj.transform.position += direction * speed * Time.deltaTime;
+        Move(deltaTime, obj);
     }
 
     public override void EndAction()
     {
         m_LiftObject = null;
+    }
+
+    // 持ち上げられるかのチェックを行います
+    protected void CheckLift(GameObject obj)
+    {
+        if (m_CheckLiftObject.IsCheckLift(m_LiftObject))
+        {
+            // 相手の持ち上げポイントを取得する
+            var point = m_LiftObject.transform.Find("LiftPoint");
+            float length = Mathf.Abs(point.position.y - m_LiftPoint.transform.position.y);
+            m_LiftObject.transform.position += Vector3.up * length;
+            // 持ち上げたオブジェクトを、ロボットの持つオブジェクトに変更する
+            AddLiftObj(obj);
+            return;
+        }
+    }
+
+    // 移動
+    protected void Move(float deltaTime, GameObject obj)
+    {
+        var dis = m_LiftObject.transform.position - this.transform.position;
+        dis.y = 0.0f;
+        var direction = Vector3.Normalize(dis);
+        // オブジェクトの方向を向く
+        if (!m_isRotate)
+        {
+            var dir = (
+            new Vector3(m_LiftObject.transform.position.x, 0.0f, m_LiftObject.transform.position.z) -
+            new Vector3(obj.transform.position.x, 0.0f, obj.transform.position.z)).normalized;
+            obj.transform.rotation = Quaternion.FromToRotation(Vector3.forward, dir);
+            //obj.transform.rotation = Quaternion.FromToRotation(-obj.transform.forward, m_LiftObject.transform.position - this.transform.position);
+            m_isRotate = true;
+        }
+
+        if (m_IsLift) return;
+        // 移動
+        float speed = 3.0f;
+        obj.transform.position += obj.transform.forward * speed * deltaTime;
+    }
+
+    // オブジェクトの登録
+    protected void AddLiftObj(GameObject obj)
+    {
+        var liftObj = obj.transform.Find("LiftObject");
+        m_LiftObject.transform.parent = liftObj;
+        // 剛体のキネマティックをオンにする
+        var body = m_LiftObject.GetComponent<Rigidbody>();
+        body.isKinematic = true;
+        // 重力をオフにする
+        body.useGravity = false;
+        m_IsLift = true;
     }
 
     // プレイヤーのみを持ち上げる
