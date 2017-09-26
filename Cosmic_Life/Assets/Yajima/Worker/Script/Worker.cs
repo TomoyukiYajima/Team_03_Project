@@ -40,6 +40,9 @@ public class Worker : MonoBehaviour, IRobotEvent
     // 命令リストのリスト
     private Dictionary<OrderNumber, Dictionary<OrderStatus, Order>> m_Orders =
         new Dictionary<OrderNumber, Dictionary<OrderStatus, Order>>();
+    // 命令列挙リスト
+    private List<OrderNumber> m_OrderNumbers =
+        new List<OrderNumber>();
 
     // 命令リストオブジェクト
     protected OrderList m_OrderList;
@@ -115,7 +118,27 @@ public class Worker : MonoBehaviour, IRobotEvent
         // 命令リストの取得
         m_OrderList = this.transform.Find("OrderList").GetComponent<OrderList>();
 
+        m_OrderNumbers.Add(OrderNumber.ONE);
+        m_OrderNumbers.Add(OrderNumber.TWO);
+        m_OrderNumbers.Add(OrderNumber.THREE);
+        // 追加
+        //m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
+        //m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
+        //m_Orders.Add(OrderNumber.THREE, m_OrdersThree);
+        //// 追加
+        //m_OrderStatus.Add(OrderNumber.ONE, OrderStatus.NULL);
+        //m_OrderStatus.Add(OrderNumber.TWO, OrderStatus.NULL);
+        //m_OrderStatus.Add(OrderNumber.THREE, OrderStatus.NULL);
+
         // 命令の追加
+        //for (int i = 0; i != m_OrderNumbers.Count; ++i)
+        //{
+        //    for (int j = 0; j != m_OrderList.GetOrderStatus(m_OrderNumbers[i]).Length; ++j)
+        //    {
+        //        var orders = m_OrderList.GetOrders(m_OrderNumbers[i])[j];
+        //        //m_Orders.Add(m_OrderList.GetOrderStatus(m_OrderNumbers[i])[j], orders);
+        //    }
+        //}
         // 1
         for (int i = 0; i != m_OrderList.GetOrderStatus(OrderNumber.ONE).Length; ++i)
         {
@@ -138,6 +161,7 @@ public class Worker : MonoBehaviour, IRobotEvent
             var orders = m_OrderList.GetOrders(OrderNumber.THREE)[i];
             m_OrdersThree.Add(m_OrderList.GetOrderStatus(OrderNumber.THREE)[i], orders);
         }
+
         // 追加
         m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
         m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
@@ -194,6 +218,8 @@ public class Worker : MonoBehaviour, IRobotEvent
         // 命令がない場合は返す
         if (!CheckrOrder(order, number) || m_OrderStatus[number] == order) return;
 
+        // if(dir == OrderDirection.NULL) return;
+
         print("方向指定命令承認！");
 
         // 最後の行動
@@ -204,15 +230,14 @@ public class Worker : MonoBehaviour, IRobotEvent
         m_StateTimer = 0.0f;
 
         // 方向指定の最初の行動
-        //m_Orders[m_OrderState].StartAction(gameObject);
         m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir);
     }
 
-    //// イベントでの呼び出し
-    //public void onOrder(OrderStatus order)
-    //{
-    //    ChangeOrder(order);
-    //}
+    // イベントでの呼び出し
+    public void onOrder(OrderStatus order)
+    {
+        ChangeOrder(order);
+    }
 
     // イベントでの呼び出し(方向指定)
     public void onOrder(OrderStatus order, OrderDirection dir)
