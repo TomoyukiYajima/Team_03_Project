@@ -14,7 +14,7 @@ public enum OrderDirection
     RIGHT       = 1 << 6,
 }
 
-public interface IRobotEvent : IEventSystemHandler {
-    void onOrder(OrderStatus order);
-    void onOrder(OrderStatus order, OrderDirection direction);
+public interface IRobotEvent : IEventSystemHandler,IGeneralEvent {
+    //void onOrder(OrderStatus order);
+    //void onOrder(OrderStatus order, OrderDirection direction);
 }
