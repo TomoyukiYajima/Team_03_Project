@@ -7,39 +7,71 @@ using UnityEngine.Windows.Speech;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class OrderDictionary : Serialize.TableBase<string, OrderStatus, OrderPair> { }
+
+/// <summary>
+/// ジェネリックを隠すために継承してしまう
+/// [System.Serializable]を書くのを忘れない
+/// </summary>
+[System.Serializable]
+public class OrderPair : Serialize.KeyAndValue<string, OrderStatus>
+{
+    public OrderPair(string key, OrderStatus value) : base(key, value){}
+}
 public class SpeechManager : MonoBehaviour
 {
+    [SerializeField, Tooltip("移動ファイル")] private string m_moveText;
+    [SerializeField, Tooltip("攻撃ファイル")] private string m_attackText;
+    [SerializeField, Tooltip("回転ファイル")] private string m_turnText;
+    [SerializeField, Tooltip("停止ファイル")] private string m_stopText;
+    [SerializeField, Tooltip("跳ぶファイル")] private string m_jumpText;
+
+    [SerializeField] private OrderDictionary m_orderDictionary;
+
+    private List<string> fileList;
     private KeywordRecognizer m_Recognizer;
 
-    private List<string> m_moveKeyword = new List<string>();
+    private Dictionary<string,List<string>> m_orderKeyword = new Dictionary<string, List<string>>();
 
-//#if !UNITY_EDITOR
+    //private Dictionary<string, OrderStatus> m_order1Type = new Dictionary<string, OrderStatus>();
+
+    //#if !UNITY_EDITOR
     void Start()
     {
+        fileList = new List<string>() {
+            m_moveText,
+            m_attackText,
+            m_turnText,
+            m_stopText,
+            m_jumpText
+        };
+
         string path = "Assets/Resources/";
-        //ストリームの生成、Open読み込み専門
-        FileStream fs = new FileStream(path + "move.txt", FileMode.Open);
-        //ストリームから読み込み準備
-        StreamReader sr = new StreamReader(fs);
-        //読み込んで表示
-        while (!sr.EndOfStream)
-        {//最後の行に（なる以外）
-            string line = sr.ReadLine();
-            m_moveKeyword.Add(line);
-            Debug.Log(line);
-        }
-        //ストリームも終了させる
-        sr.Close();
 
-        string[] m_Keywords = new string[m_moveKeyword.Count];
-
-        for (int i = 0; i < m_moveKeyword.Count; ++i)
+        List<string> keywords = new List<string>();
+        foreach(var list in m_orderDictionary.GetTable())
         {
-            m_Keywords[i] = m_moveKeyword[i];
+            List<string> keywordList = new List<string>();
+            //ストリームの生成、Open読み込み専門
+            FileStream fs = new FileStream(path + list.Value + ".txt", FileMode.Open);
+            //ストリームから読み込み準備
+            StreamReader sr = new StreamReader(fs);
+            //読み込んで表示
+            while (!sr.EndOfStream)
+            {//最後の行に（なる以外）
+                string line = sr.ReadLine();
+                keywordList.Add(line);
+                Debug.Log(line);
+            }
+            //ストリームも終了させる
+            sr.Close();
+            m_orderKeyword.Add(name,keywordList);
+            keywords.AddRange(keywordList);
         }
 
         // キーワードを格納
-        m_Recognizer = new KeywordRecognizer(m_Keywords);
+        m_Recognizer = new KeywordRecognizer(keywords.ToArray());
         m_Recognizer.OnPhraseRecognized += OnPhraseRecognized;
         m_Recognizer.Start();
     }
@@ -64,35 +96,45 @@ public class SpeechManager : MonoBehaviour
         //    break;
         //}
 
-        //認識したキーワードで処理判定
-        switch (args.text)
+        foreach (var list in m_orderKeyword)
         {
-            case "すすめ":
-            case "すすんで":
-            case "ぜんしんせよ":
-            case "いどうしろ":
-                orderType = OrderStatus.MOVE;
-                break;
-            case "とまれ":
-                orderType = OrderStatus.STOP;
-                break;
-            case "じばくしろ":
-                orderType = OrderStatus.MOVE;
-                break;
-            case "みぎにまわれ":
-                orderType = OrderStatus.TURN_RIGHT;
-                break;
-            case "ひだりにまわれ":
-                orderType = OrderStatus.TURN_LEFT;
-                break;
-            case "こうげきしろ":
-            case "こわせ":
-            case "うて":
-            case "はかいしろ":
-                orderType = OrderStatus.ATTACK;
-                break;
+            foreach(var order in list.Value)
+            {
+                if (args.text != order) continue;
+                m_orderDictionary.GetTable().TryGetValue(list.Key, out orderType);
+            }
         }
 
+        //認識したキーワードで処理判定
+        //switch (args.text)
+        //{
+        //    case "すすめ":
+        //    case "すすんで":
+        //    case "ぜんしんせよ":
+        //    case "いどうしろ":
+        //        orderType = OrderStatus.MOVE;
+        //        break;
+        //    case "とまれ":
+        //        orderType = OrderStatus.STOP;
+        //        break;
+        //    case "じばくしろ":
+        //        orderType = OrderStatus.MOVE;
+        //        break;
+        //    case "みぎにまわれ":
+        //        orderType = OrderStatus.TURN_RIGHT;
+        //        break;
+        //    case "ひだりにまわれ":
+        //        orderType = OrderStatus.TURN_LEFT;
+        //        break;
+        //    case "こうげきしろ":
+        //    case "こわせ":
+        //    case "うて":
+        //    case "はかいしろ":
+        //        orderType = OrderStatus.ATTACK;
+        //        break;
+        //}
+
+        if (orderType == OrderStatus.NULL) return;
 
         SendOrder(orderType, OrderDirection.NULL);
 
@@ -149,8 +191,9 @@ public class SpeechManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (m_Recognizer == null || !m_Recognizer.IsRunning) return;
         m_Recognizer.OnPhraseRecognized -= OnPhraseRecognized;
         m_Recognizer.Start();
     }
-//#endif
+    //#endif
 }
