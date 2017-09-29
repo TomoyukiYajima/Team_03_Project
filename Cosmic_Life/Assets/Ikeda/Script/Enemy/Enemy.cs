@@ -1,19 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour {
+public class Enemy : MonoBehaviour, IEnemyEvent {
 
     //命令列挙
     [SerializeField]
-    private EnemyStatus m_OrderState = EnemyStatus.None;
+    protected EnemyStatus m_OrderState = EnemyStatus.None;
     // 命令格納コンテナ
-    private Dictionary<EnemyStatus, System.Action<float, Enemy>> m_Orders =
+    protected Dictionary<EnemyStatus, System.Action<float, Enemy>> m_Orders =
         new Dictionary<EnemyStatus, System.Action<float, Enemy>>();
 
     //命令リスト
-    private EnemyStateList m_StateList;
+    protected EnemyStateList m_StateList;
 
     // 命令実行時間
     protected float m_StateTimer = 0.0f;
@@ -21,55 +19,60 @@ public class Enemy : MonoBehaviour {
 
     //巡回のポイント
     [SerializeField, Tooltip("巡回のポイントを設定する")]
-    private Transform[] m_RoundPoints;
+    protected Transform[] m_RoundPoints;
 
-    public NavMeshAgent m_Agent;
+    [SerializeField]
+    protected int m_Hp;
 
-    //現在の巡回ポイントのインデックス
-    private int m_CurrentPatrolPointIndex = -1;
+    //public NavMeshAgent m_Agent;
 
-    //見える距離
-    [SerializeField, Tooltip("見える距離の設定")]
-    private float m_ViewingDistance;
+    ////現在の巡回ポイントのインデックス
+    //private int m_CurrentPatrolPointIndex = -1;
 
-    //視野角
-    [SerializeField, Tooltip("視野角の設定")]
-    private float m_ViewingAngle;
+    ////見える距離
+    //[SerializeField, Tooltip("見える距離の設定")]
+    //private float m_ViewingDistance;
+
+    ////視野角
+    //[SerializeField, Tooltip("視野角の設定")]
+    //private float m_ViewingAngle;
 
     //プレイヤーの参照
-    public GameObject m_Player;
+    protected GameObject m_Player;
 
-    //プレイヤーへの注視点
-    Transform m_PlayerLookPoint;
+    ////プレイヤーへの注視点
+    //Transform m_PlayerLookPoint;
 
-    //自身の目の位置
-    Transform m_EyePoint;
+    ////自身の目の位置
+    //Transform m_EyePoint;
 
     // Use this for initialization
-    void Start () {
+    public virtual void Start()
+    {
         SetState();
 
-        m_Agent = GetComponent<NavMeshAgent>();
+        //m_Agent = GetComponent<NavMeshAgent>();
 
-        //目的地を設定する
-        SetNewPatrolPointToDestination();
+        ////目的地を設定する
+        //SetNewPatrolPointToDestination();
 
-        //最初の状態を設定する
-        ChangeState(EnemyStatus.RoundState);
+        ////最初の状態を設定する
+        //ChangeState(EnemyStatus.RoundState);
 
         //タグでプレイヤーオブジェクトを検索して保持
         m_Player = GameObject.FindGameObjectWithTag("Player");
-        m_PlayerLookPoint = m_Player.transform.Find("LookPoint");
-        m_EyePoint = transform.Find("EyePoint");
+        //m_PlayerLookPoint = m_Player.transform.Find("LookPoint");
+        //m_EyePoint = transform.Find("EyePoint");
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
         float time = Time.deltaTime;
         m_Orders[m_OrderState](time, this);
 
         m_StateTimer += time;
-	}
+    }
 
 
     // 命令の設定を行います
@@ -113,96 +116,110 @@ public class Enemy : MonoBehaviour {
         return false;
     }
 
-    public bool CanSeePlayer()
+    public GameObject GetPlayer()
     {
-        if (!IsPlayerInViewingDistance())
-            return false;
-
-        if (!IsPlayerInViewingAngle())
-            return false;
-
-        if (!CanHitRayToPlayer())
-            return false;
-
-        return true;
+        return m_Player;
     }
 
-    bool IsPlayerInViewingDistance()
+    public virtual void onHear()
     {
-        //自身からプレイヤーまでの距離
-        float distanceToPlayer = Vector3.Distance(m_PlayerLookPoint.position, m_EyePoint.position);
 
-        return (distanceToPlayer <= m_ViewingDistance);
     }
 
-    bool IsPlayerInViewingAngle()
+    public virtual void onDamage(int amount)
     {
-        //自身からプレイヤーへの方向ベクトル
-        Vector3 directionToPlayer = m_PlayerLookPoint.position - m_EyePoint.position;
-
-        //自分の正面向きベクトルとプレイヤーへの方向ベクトルの差分角度
-        float angleToPlayer = Vector3.Angle(m_EyePoint.forward, directionToPlayer);
-
-        //見える角度の範囲内にプレイヤーがいるかどうかを返却する
-        return (Mathf.Abs(angleToPlayer) <= m_ViewingAngle);
-    }
-
-    bool CanHitRayToPlayer()
-    {
-        //自身からプレイヤーへの方向ベクトル
-        Vector3 directionToPlayer = m_PlayerLookPoint.position - m_EyePoint.position;
-
-        RaycastHit hitInfo;
-        bool hit = Physics.Raycast(m_EyePoint.position, directionToPlayer, out hitInfo);
-
-        //プレイヤーにRayが当たったかどうか返却する
-        return (hit && hitInfo.collider.tag == "Player");
 
     }
 
 
-    public bool HasArrived()
-    {
-        return (Vector3.Distance(m_Agent.destination, transform.Find("FootPosition").position) < 0.5f);
-    }
+    //public bool CanSeePlayer()
+    //{
+    //    if (!IsPlayerInViewingDistance())
+    //        return false;
 
-    public void SetNewPatrolPointToDestination()
-    {
-        m_CurrentPatrolPointIndex = (m_CurrentPatrolPointIndex + 1) % m_RoundPoints.Length;
+    //    if (!IsPlayerInViewingAngle())
+    //        return false;
 
-        m_Agent.destination = m_RoundPoints[m_CurrentPatrolPointIndex].position;
-    }
+    //    if (!CanHitRayToPlayer())
+    //        return false;
 
-    public void OnDrawGizmos()
-    {
-        //視界の表示
-        if (m_EyePoint != null)
-        {
-            //線の色
-            Gizmos.color = new Color(0f, 0f, 1f);
-            Vector3 eyePosition = m_EyePoint.position;
-            Vector3 forward = m_EyePoint.forward * m_ViewingDistance;
+    //    return true;
+    //}
 
-            Gizmos.DrawRay(eyePosition, forward);
-            Gizmos.DrawRay(eyePosition, Quaternion.Euler(0, m_ViewingAngle, 0) * forward);
-            Gizmos.DrawRay(eyePosition, Quaternion.Euler(0, -m_ViewingAngle, 0) * forward);
-        }
+    //bool IsPlayerInViewingDistance()
+    //{
+    //    //自身からプレイヤーまでの距離
+    //    float distanceToPlayer = Vector3.Distance(m_PlayerLookPoint.position, m_EyePoint.position);
 
-        //巡回ルートを描画
-        if (m_RoundPoints != null)
-        {
-            Gizmos.color = new Color(0, 1, 0);
+    //    return (distanceToPlayer <= m_ViewingDistance);
+    //}
 
-            for (int i = 0; i < m_RoundPoints.Length; i++)
-            {
-                int startIndex = i;
-                int endIndex = i + 1;
+    //bool IsPlayerInViewingAngle()
+    //{
+    //    //自身からプレイヤーへの方向ベクトル
+    //    Vector3 directionToPlayer = m_PlayerLookPoint.position - m_EyePoint.position;
 
-                if (endIndex == m_RoundPoints.Length)
-                    endIndex = 0;
+    //    //自分の正面向きベクトルとプレイヤーへの方向ベクトルの差分角度
+    //    float angleToPlayer = Vector3.Angle(m_EyePoint.forward, directionToPlayer);
 
-                Gizmos.DrawLine(m_RoundPoints[startIndex].position, m_RoundPoints[endIndex].position);
-            }
-        }
-    }
+    //    //見える角度の範囲内にプレイヤーがいるかどうかを返却する
+    //    return (Mathf.Abs(angleToPlayer) <= m_ViewingAngle);
+    //}
+
+    //bool CanHitRayToPlayer()
+    //{
+    //    //自身からプレイヤーへの方向ベクトル
+    //    Vector3 directionToPlayer = m_PlayerLookPoint.position - m_EyePoint.position;
+
+    //    RaycastHit hitInfo;
+    //    bool hit = Physics.Raycast(m_EyePoint.position, directionToPlayer, out hitInfo);
+
+    //    //プレイヤーにRayが当たったかどうか返却する
+    //    return (hit && hitInfo.collider.tag == "Player");
+
+    //}
+
+
+    //public bool HasArrived()
+    //{
+    //    return (Vector3.Distance(m_Agent.destination, transform.Find("FootPosition").position) < 0.5f);
+    //}
+
+    //public void SetNewPatrolPointToDestination()
+    //{
+    //    m_CurrentPatrolPointIndex = (m_CurrentPatrolPointIndex + 1) % m_RoundPoints.Length;
+
+    //    m_Agent.destination = m_RoundPoints[m_CurrentPatrolPointIndex].position;
+    //}
+
+    //public void OnDrawGizmos()
+    //{
+    //    //視界の表示
+    //    if (m_EyePoint != null)
+    //    {
+    //        //線の色
+    //        Gizmos.color = new Color(0f, 0f, 1f);
+    //        Vector3 eyePosition = m_EyePoint.position;
+    //        Vector3 forward = m_EyePoint.forward * m_ViewingDistance;
+
+    //        Gizmos.DrawRay(eyePosition, forward);
+    //        Gizmos.DrawRay(eyePosition, Quaternion.Euler(0, m_ViewingAngle, 0) * forward);
+    //        Gizmos.DrawRay(eyePosition, Quaternion.Euler(0, -m_ViewingAngle, 0) * forward);
+    //    }
+
+    //    //巡回ルートを描画
+    //    if (m_RoundPoints != null)
+    //    {
+    //        Gizmos.color = new Color(0, 1, 0);
+
+    //        for (int i = 0; i < m_RoundPoints.Length; i++)
+    //        {
+    //            int startIndex = i;
+    //            int endIndex = i + 1;
+
+    //            if (endIndex == m_RoundPoints.Length)
+    //                endIndex = 0;
+
+    //            Gizmos.DrawLine(m_RoundPoints[startIndex].position, m_RoundPoints[endIndex].position);
+    //        }
 }
