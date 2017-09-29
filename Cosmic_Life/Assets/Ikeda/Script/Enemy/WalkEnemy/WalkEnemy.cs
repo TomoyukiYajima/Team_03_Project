@@ -112,6 +112,11 @@ public class WalkEnemy : Enemy {
         m_Agent.destination = m_RoundPoints[m_CurrentPatrolPointIndex].position;
     }
 
+    public void SetViewAngle(float angle)
+    {
+        m_ViewingAngle = angle;
+    }
+
     public void OnDrawGizmos()
     {
         //視界の表示

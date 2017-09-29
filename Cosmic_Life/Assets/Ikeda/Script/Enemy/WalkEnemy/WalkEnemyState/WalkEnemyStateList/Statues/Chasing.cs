@@ -26,7 +26,7 @@ public class Chasing : EnemyState {
 
             float distance = Vector3.Distance(transform.position, enemy.GetPlayer().transform.position);
 
-            if (distance <= 1.0f)
+            if (distance <= 1.5f)
             {
                 enemy.ChangeState(EnemyStatus.Attack);
             }
