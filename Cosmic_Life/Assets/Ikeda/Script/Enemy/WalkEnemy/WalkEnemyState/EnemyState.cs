@@ -16,7 +16,7 @@ public class EnemyState : MonoBehaviour {
 		
 	//}
 
-    public virtual void Action(float deltaTime, Enemy obj)
+    public virtual void Action(float deltaTime,Enemy obj)
     {
     }
 }

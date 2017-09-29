@@ -14,21 +14,28 @@ public class Chasing : EnemyState {
 		
 	}
 
-    public override void Action(float deltaTime, Enemy obj)
+    public override void Action(float deltaTime, Enemy enemy)
     {
         print("追跡中");
 
         //プレイヤーが見えている場合
-        if (obj.CanSeePlayer())
+        if (enemy.GetComponent<WalkEnemy>().CanSeePlayer())
         {
             //プレイヤーの場所へ向かう
-            obj.m_Agent.destination = obj.m_Player.transform.position;
+            enemy.GetComponent<WalkEnemy>().m_Agent.destination = enemy.GetPlayer().transform.position;
+
+            float distance = Vector3.Distance(transform.position, enemy.GetPlayer().transform.position);
+
+            if (distance <= 1.0f)
+            {
+                enemy.ChangeState(EnemyStatus.Attack);
+            }
         }
         //見失った場合
         else
         {
             //追跡中(見失い)に状態変更
-            obj.ChangeState(EnemyStatus.ChasingButLosed);
+            enemy.ChangeState(EnemyStatus.ChasingButLosed);
         }
     }
 }

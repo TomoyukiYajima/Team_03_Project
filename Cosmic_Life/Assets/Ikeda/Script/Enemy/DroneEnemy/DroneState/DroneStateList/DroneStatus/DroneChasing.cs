@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DroneChasing : DroneState {
+public class DroneChasing : EnemyState {
 
 	// Use this for initialization
 	void Start () {

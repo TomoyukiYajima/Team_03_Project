@@ -10,6 +10,8 @@ public enum EnemyStatus
     Chasing,
     //追跡中(見失っている)
     ChasingButLosed,
+    //攻撃
+    Attack,
 
     None
 }

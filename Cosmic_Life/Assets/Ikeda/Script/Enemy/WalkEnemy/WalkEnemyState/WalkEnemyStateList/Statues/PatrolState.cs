@@ -15,21 +15,22 @@ public class PatrolState : EnemyState
 
     //}
 
-    public override void Action(float deltaTime, Enemy obj)
+    public override void Action(float deltaTime, Enemy enemy)
     {
         print("巡回中");
 
         //プレイヤーが見えた場合
-        if (obj.CanSeePlayer())
+        if (enemy.GetComponent<WalkEnemy>().CanSeePlayer())
         {
-            obj.ChangeState(EnemyStatus.Chasing);
-            obj.m_Agent.destination = obj.m_Player.transform.position;
+
+            enemy.ChangeState(EnemyStatus.Chasing);
+            //obj.GetComponent<WalkEnemy>().m_Agent.destination = obj.GetPlayer().transform.position;
         }
         //プレイヤーが見えなくて、目的地に到着した場合
-        else if (obj.HasArrived())
+        else if (enemy.GetComponent<WalkEnemy>().HasArrived())
         {
             //目的地を次の巡回ポイントに切り替える
-            obj.SetNewPatrolPointToDestination();
+            enemy.GetComponent<WalkEnemy>().SetNewPatrolPointToDestination();
         }
     }
 }
