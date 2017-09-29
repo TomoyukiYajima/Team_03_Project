@@ -38,7 +38,10 @@ public class Player : MonoBehaviour {
         //velocity = new Vector3(x, 0, z);
         if (m_camera != null)
         {
-            velocity += m_camera.forward * x;
+            var forward = Vector3.Scale(m_camera.forward, new Vector3(1, 0, 1)).normalized;
+
+
+            velocity += forward * x;
             velocity += m_camera.right * z;
         }
 

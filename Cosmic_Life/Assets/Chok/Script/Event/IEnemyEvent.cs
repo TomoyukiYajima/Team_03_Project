@@ -6,5 +6,5 @@ using UnityEngine.EventSystems;
 public interface IEnemyEvent : IEventSystemHandler
 {
     void onHear();
-    void onDamage(int amount);
+    //void onDamage(int amount);
 }

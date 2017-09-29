@@ -85,29 +85,60 @@ public class SpeechManager : MonoBehaviour
             case "ひだりにまわれ":
                 orderType = OrderStatus.TURN_LEFT;
                 break;
+            case "こうげきしろ":
+            case "こわせ":
+            case "うて":
+            case "はかいしろ":
+                orderType = OrderStatus.ATTACK;
+                break;
         }
 
+
+        SendOrder(orderType, OrderDirection.NULL);
+
+    }
+
+    private void SendOrder(OrderStatus order, OrderDirection dir)
+    {
         // ワーカーリスト取得
-        List<GameObject> workerList = new List<GameObject>();
-        workerList.AddRange(GameObject.FindGameObjectsWithTag("Robot"));
-        workerList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+        //List<GameObject> workerList = new List<GameObject>();
+        //workerList.AddRange(GameObject.FindGameObjectsWithTag("Robot"));
+        //workerList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+
+        var robotList = GameObject.FindGameObjectsWithTag("Robot");
 
         // 全部のワーカにオーダーを出す
-        foreach (var worker in workerList)
+        foreach (var robot in robotList)
         {
             // IRobotEventが実装されていなければreturn
-            if (!ExecuteEvents.CanHandleEvent<IOrderEvent>(worker))
+            if (!ExecuteEvents.CanHandleEvent<IOrderEvent>(robot))
             {
-                Debug.Log("IRobotEvent未実装");
+                Debug.Log("IOrderEvent未実装");
                 return;
             }
-            
+
             ExecuteEvents.Execute<IOrderEvent>(
-                worker,
+                robot,
                 null,
-                (receive, y) => receive.onOrder(orderType, OrderDirection.FORWARD));
+                (receive, y) => receive.onOrder(order, dir));
         }
 
+        var enemyList = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (var enemy in enemyList)
+        {
+            // IRobotEventが実装されていなければreturn
+            if (!ExecuteEvents.CanHandleEvent<IEnemyEvent>(enemy))
+            {
+                Debug.Log("IEnemyEvent未実装");
+                return;
+            }
+
+            ExecuteEvents.Execute<IEnemyEvent>(
+                enemy,
+                null,
+                (receive, y) => receive.onHear());
+        }
     }
 
 
