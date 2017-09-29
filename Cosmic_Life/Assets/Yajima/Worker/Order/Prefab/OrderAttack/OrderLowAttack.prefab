@@ -54,6 +54,7 @@ GameObject:
   - component: {fileID: 135785951482093988}
   - component: {fileID: 23661295791184114}
   - component: {fileID: 33130261757082240}
+  - component: {fileID: 114340792200603904}
   m_Layer: 0
   m_Name: Collider
   m_TagString: AttackColliderP
@@ -228,6 +229,18 @@ MonoBehaviour:
   m_StopPoint: {fileID: 4336382773810658}
   m_Collider: {fileID: 1476925551090656}
   m_AttackSpeed: 1
+--- !u!114 &114340792200603904
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1476925551090656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80fff58c78a83dc40acfffde9cefab39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Damage: 15
 --- !u!135 &135785951482093988
 SphereCollider:
   m_ObjectHideFlags: 1

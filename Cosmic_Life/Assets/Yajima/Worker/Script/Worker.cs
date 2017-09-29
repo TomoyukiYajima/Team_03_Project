@@ -1,4 +1,4 @@
-﻿//using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +24,7 @@ public class Worker : MonoBehaviour, IOrderEvent
     // ジャミングされているか？
     private bool m_IsJamming = false;
 
-    // 命令
+    // 実行中の命令格納コンテナ
     protected Dictionary<OrderNumber, OrderStatus> m_OrderStatus =
         new Dictionary<OrderNumber, OrderStatus>();
 
@@ -35,6 +35,7 @@ public class Worker : MonoBehaviour, IOrderEvent
     private Dictionary<OrderStatus, Order> m_OrdersTwo =
         new Dictionary<OrderStatus, Order>();
     // 命令リストのリスト3
+    //[SerializeField]
     private Dictionary<OrderStatus, Order> m_OrdersThree =
         new Dictionary<OrderStatus, Order>();
     // 命令リストのリスト
@@ -43,6 +44,15 @@ public class Worker : MonoBehaviour, IOrderEvent
     // 命令列挙リスト
     private List<OrderNumber> m_OrderNumbers =
         new List<OrderNumber>();
+
+    // 命令格納コンテナ
+    //private Dictionary<OrderStatus, Action<float, GameObject>> m_Orders =
+    //    new Dictionary<OrderStatus, Action<float, GameObject>>();
+    // 命令変更関数格納リスト
+    private List<Action<OrderNumber, OrderDirection>> m_ChangeOrders =
+        new List<Action<OrderNumber, OrderDirection>>();
+    //private List<Action<OrderStatus, OrderNumber, int>> m_ChangeOrders =
+    //    new List<Action<OrderStatus, OrderNumber, int>>();
 
     // 命令リストオブジェクト
     protected OrderList m_OrderList;
@@ -88,7 +98,7 @@ public class Worker : MonoBehaviour, IOrderEvent
         // 命令(仮)　音声認識でプレイヤーから命令してもらう
         // OKボタンが押されたら、移動命令を行う
         if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.MOVE);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_CANCEL)) ChangeOrder(OrderStatus.STOP);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_CANCEL)) ChangeOrder(OrderStatus.ALLSTOP);
 
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN_LEFT);
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN_RIGHT);
@@ -96,7 +106,8 @@ public class Worker : MonoBehaviour, IOrderEvent
         // 持ち上げサンプル
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.PULL_OUT);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) stopOrder(OrderStatus.ATTACK_HIGH);
 
         // 攻撃サンプル
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.MOVE, OrderDirection.RIGHT);
@@ -147,11 +158,20 @@ public class Worker : MonoBehaviour, IOrderEvent
             for (int j = 0; j != m_OrderList.GetOrderStatus(m_OrderNumbers[i]).Length; ++j)
             {
                 var orders = m_OrderList.GetOrders(m_OrderNumbers[i])[j];
-                m_Orders[m_OrderNumbers[i]].Add(m_OrderList.GetOrderStatus(m_OrderNumbers[i])[j], orders);
+                var state = m_OrderList.GetOrderStatus(m_OrderNumbers[i])[j];
+                //m_Orders[m_OrderNumbers[i]].Add(m_OrderList.GetOrderStatus(m_OrderNumbers[i])[j], orders);
+                m_Orders[m_OrderNumbers[i]].Add(state, orders);
                 // 番号の設定
-                m_Orders[m_OrderNumbers[i]][m_OrderStatus[m_OrderNumbers[i]]].SetOrderNumber(m_OrderNumbers[i]);
+                //m_Orders[m_OrderNumbers[i]][m_OrderStatus[m_OrderNumbers[i]]].SetOrderNumber(m_OrderNumbers[i]);
+                m_Orders[m_OrderNumbers[i]][state].SetOrderNumber(m_OrderNumbers[i]);
             }
         }
+
+        // 命令変更格納リストに追加
+        //m_ChangeOrders.Add((orders, numbers, count) => { Change(orders, numbers); });
+        m_ChangeOrders.Add((number, dir) => { m_Orders[number][m_OrderStatus[number]].StartAction(gameObject); });
+        m_ChangeOrders.Add((number, dir) => { m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir); });
+        // m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir);
     }
 
     // public virtual void ChangeOrder(OrderStatus order, OrderNumber number = OrderNumber.ONE)
@@ -162,31 +182,16 @@ public class Worker : MonoBehaviour, IOrderEvent
         OrderNumber number = OrderNumber.ONE;
         if (m_OrderList.IsOrder(OrderNumber.TWO, order)) number = OrderNumber.TWO;
         else if (m_OrderList.IsOrder(OrderNumber.THREE, order)) number = OrderNumber.THREE;
+        // 変更
+        Change(order, number, OrderDirection.NULL, 0);
+    }
 
-        // 命令がない場合は返す
-        if (!CheckrOrder(order, number) || m_OrderStatus[number] == order) return;
-
-        //// 同じ命令の場合
-        //if(m_OrderState == order)
-        //{
-        //    // 命令オプションも同一の場合は返す
-        //    if (m_OrderOption == option) return;
-        //}
-
-        print("命令承認！");
-
-        // 最後の行動
-        //m_OrdersOne[m_OrderOneState].EndAction();
-        m_Orders[number][m_OrderStatus[number]].EndAction();
-
-        // 命令状態の変更
-        //m_OrderOneState = order;
-        m_OrderStatus[number] = order;
-        m_StateTimer = 0.0f;
-
-        // 最初の行動
-        // m_OrdersOne[m_OrderOneState].StartAction(gameObject);
-        m_Orders[number][m_OrderStatus[number]].StartAction(gameObject);
+    // 命令の変更を行います(命令番号指定)
+    public virtual void ChangeOrder(OrderStatus order, OrderNumber number = OrderNumber.ONE)
+    {
+        // 変更
+        Change(order, number, OrderDirection.NULL, 0);
+        //m_ChangeOrders[0](order, number, 0);
     }
 
     // public virtual void ChangeOrder(OrderStatus order, OrderDirection dir, OrderNumber number = OrderNumber.ONE)
@@ -200,7 +205,7 @@ public class Worker : MonoBehaviour, IOrderEvent
         // 命令がない場合は返す
         if (!CheckrOrder(order, number) || m_OrderStatus[number] == order) return;
 
-        // if(dir == OrderDirection.NULL) return;
+        if(dir == OrderDirection.NULL) return;
 
         print("方向指定命令承認！");
 
@@ -213,6 +218,20 @@ public class Worker : MonoBehaviour, IOrderEvent
 
         // 方向指定の最初の行動
         m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir);
+    }
+
+    public void Change(OrderStatus order, OrderNumber orderNum, OrderDirection dir, int number)
+    {
+        // 命令がない場合は返す
+        if (!CheckrOrder(order, orderNum) || m_OrderStatus[orderNum] == order) return;
+        print("命令承認！:" + orderNum.ToString() + ":" + m_OrderStatus[orderNum].ToString());
+        // 最後の行動
+        m_Orders[orderNum][m_OrderStatus[orderNum]].EndAction();
+        // 命令状態の変更
+        m_OrderStatus[orderNum] = order;
+        m_StateTimer = 0.0f;
+        // 最初の行動
+        m_ChangeOrders[number](orderNum, dir);
     }
 
     // 指定した命令があるかの確認を行います
@@ -243,10 +262,31 @@ public class Worker : MonoBehaviour, IOrderEvent
     {
         ChangeOrder(order, dir);
     }
-    // イベントでの終了処理呼び出し
-    public void endOrder()
+    // イベントでの呼び出し(停止処理)
+    public void stopOrder()
     {
-        ChangeOrder(OrderStatus.NULL);
+        // 全部の命令を停止命令に変更する
+        for (int i = 0; i != m_OrderNumbers.Count; ++i)
+        {
+            m_Orders[m_OrderNumbers[i]][m_OrderStatus[m_OrderNumbers[i]]].StopAction(gameObject);
+        }
+    }
+    // 
+    public void stopOrder(OrderStatus order)
+    {
+        // 指定の命令を捜す
+        for (int i = 0; i != m_OrderNumbers.Count; ++i)
+        {
+            // 命令がなければ、やり直す
+            if (!m_Orders[m_OrderNumbers[i]].ContainsKey(order)) continue;
+            // 指定した命令を停止させる
+            m_Orders[m_OrderNumbers[i]][order].StopAction(gameObject);
+        }
+    }
+    // イベントでの終了処理呼び出し
+    public void endOrder(OrderNumber number)
+    {
+        ChangeOrder(OrderStatus.NULL, number);
     }
     #endregion
     #endregion

@@ -7,6 +7,10 @@ public interface IOrderEvent : IEventSystemHandler {
     void onOrder(OrderStatus order);
     // 命令の変更(方向指定)
     void onOrder(OrderStatus order, OrderDirection direction);
+    // 命令の停止
+    void stopOrder();
+    // 命令の停止
+    void stopOrder(OrderStatus order);
     // 命令の終了
-    void endOrder();
+    void endOrder(OrderNumber number);
 }
