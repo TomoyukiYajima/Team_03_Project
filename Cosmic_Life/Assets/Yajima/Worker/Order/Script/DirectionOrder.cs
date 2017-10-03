@@ -35,8 +35,8 @@ public class DirectionOrder : Order {
         base.Action(deltaTime, obj);
     }
 
-    public override void EndAction()
+    public override void EndAction(GameObject obj)
     {
-        base.EndAction();
+        base.EndAction(obj);
     }
 }

@@ -138,6 +138,7 @@ public class Worker : MonoBehaviour, IOrderEvent
     {
         // 命令リストの取得
         m_OrderList = this.transform.Find("OrderList").GetComponent<OrderList>();
+        m_OrderList.InitializeOrder();
 
         m_OrderNumbers.Add(OrderNumber.ONE);
         m_OrderNumbers.Add(OrderNumber.TWO);
@@ -210,7 +211,7 @@ public class Worker : MonoBehaviour, IOrderEvent
         print("方向指定命令承認！");
 
         // 最後の行動
-        m_Orders[number][m_OrderStatus[number]].EndAction();
+        m_Orders[number][m_OrderStatus[number]].EndAction(gameObject);
 
         // 命令状態の変更
         m_OrderStatus[number] = order;
@@ -226,7 +227,7 @@ public class Worker : MonoBehaviour, IOrderEvent
         if (!CheckrOrder(order, orderNum) || m_OrderStatus[orderNum] == order) return;
         print("命令承認！:" + orderNum.ToString() + ":" + m_OrderStatus[orderNum].ToString());
         // 最後の行動
-        m_Orders[orderNum][m_OrderStatus[orderNum]].EndAction();
+        m_Orders[orderNum][m_OrderStatus[orderNum]].EndAction(gameObject);
         // 命令状態の変更
         m_OrderStatus[orderNum] = order;
         m_StateTimer = 0.0f;

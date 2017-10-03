@@ -77,7 +77,7 @@ public class OrderAttack : Order {
         m_IsEndOrder = true;
     }
 
-    public override void EndAction()
+    public override void EndAction(GameObject obj)
     {
         //base.EndAction();
         //m_IsEndOrder = false;

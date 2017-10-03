@@ -62,9 +62,9 @@ public class OrderPullOut : OrderLift {
         Move(deltaTime, obj);
     }
 
-    public override void EndAction()
+    public override void EndAction(GameObject obj)
     {
-        base.EndAction();
+        base.EndAction(obj);
 
         m_BackTime = 0.0f;
         m_IsBackMove = false;

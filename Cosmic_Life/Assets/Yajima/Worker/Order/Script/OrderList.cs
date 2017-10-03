@@ -34,7 +34,25 @@ public class OrderList : MonoBehaviour {
         new Dictionary<OrderNumber, Order[]>();
 
     // Use this for initialization
-    void Start()
+    //void Start()
+    //{
+    //    //// 命令状態リストの追加
+    //    //m_OrderStatus.Add(OrderNumber.ONE, m_OrderOneStatus);
+    //    //m_OrderStatus.Add(OrderNumber.TWO, m_OrderTwoStatus);
+    //    //m_OrderStatus.Add(OrderNumber.THREE, m_OrderThreeStatus);
+    //    //// 命令リストの追加
+    //    //m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
+    //    //m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
+    //    //m_Orders.Add(OrderNumber.THREE, m_OrdersThree);
+    //}
+
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //}
+
+    // 命令の初期化
+    public void InitializeOrder()
     {
         // 命令状態リストの追加
         m_OrderStatus.Add(OrderNumber.ONE, m_OrderOneStatus);
@@ -45,11 +63,6 @@ public class OrderList : MonoBehaviour {
         m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
         m_Orders.Add(OrderNumber.THREE, m_OrdersThree);
     }
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //}
 
     // 命令状態リストの取得
     //public OrderStatus[] GetOrderStatus() { return m_OrderOneStatus; }
@@ -107,25 +120,28 @@ public class OrderList : MonoBehaviour {
             // 自身の取得;
             OrderList orders = target as OrderList;
 
+            EditorGUILayout.Space();
             // エディタ上でのラベル表示
             EditorGUILayout.LabelField("〇命令リスト1");
             // 命令リスト1
             EditorGUILayout.PropertyField(OrderOneStatus, new GUIContent("命令リスト"), true);
-            EditorGUILayout.Space();
+            //EditorGUILayout.Space();
             EditorGUILayout.PropertyField(OrdersOne, new GUIContent("実行リスト"), true);
 
+            EditorGUILayout.Space();
             // エディタ上でのラベル表示
             EditorGUILayout.LabelField("〇命令リスト2");
             // 命令リスト1
             EditorGUILayout.PropertyField(OrderTwoStatus, new GUIContent("命令リスト"), true);
-            EditorGUILayout.Space();
+            //EditorGUILayout.Space();
             EditorGUILayout.PropertyField(OrdersTwo, new GUIContent("実行リスト"), true);
 
+            EditorGUILayout.Space();
             // エディタ上でのラベル表示
             EditorGUILayout.LabelField("〇命令リスト3");
             // 命令リスト1
             EditorGUILayout.PropertyField(OrderThreeStatus, new GUIContent("命令リスト"), true);
-            EditorGUILayout.Space();
+            //EditorGUILayout.Space();
             EditorGUILayout.PropertyField(OrdersThree, new GUIContent("実行リスト"), true);
 
             // Unity画面での変更を更新する(これがないとUnity画面で変更が表示されない)

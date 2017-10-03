@@ -107,7 +107,7 @@ public class OrderLift : Order {
         Move(deltaTime, obj);
     }
 
-    public override void EndAction()
+    public override void EndAction(GameObject obj)
     {
         m_LiftObject = null;
     }

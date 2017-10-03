@@ -7,8 +7,12 @@ public class Order : MonoBehaviour {
 
     // 命令が終了したか
     protected bool m_IsEndOrder = false;
+    // 命令終了時に新しい命令を実行するか
+    //protected bool m_IsEndPlayOrder = false;
     // 格納された命令番号
     protected OrderNumber m_OrderNumber = OrderNumber.ONE;
+    // 命令終了時に実行する命令
+    //protected OrderStatus m_EndPlayOrder = OrderStatus.NULL;
 
     // Use this for initialization
     public virtual void Start() { }
@@ -23,7 +27,13 @@ public class Order : MonoBehaviour {
     public virtual void Action(float deltaTime, GameObject obj) { }
 
     // 行動終了
-    public virtual void EndAction() { m_IsEndOrder = false; }
+    public virtual void EndAction(GameObject obj)
+    {
+        m_IsEndOrder = false;
+        // 命令終了時に新しい命令を実行する場合
+        //if (m_IsEndPlayOrder) ChangeOrder(obj, m_EndPlayOrder);
+        //m_IsEndPlayOrder = false;
+    }
 
     // 停止時の行動
     public virtual void StopAction(GameObject obj)
@@ -37,6 +47,13 @@ public class Order : MonoBehaviour {
 
     // 命令番号を設定します
     public void SetOrderNumber(OrderNumber number) { m_OrderNumber = number; }
+
+    // 命令終了時に実行する命令を設定します
+    //public void SetEndPlayOrder(OrderStatus order)
+    //{
+    //    m_IsEndPlayOrder = true;
+    //    m_EndPlayOrder = order;
+    //}
 
     // 命令番号を取得します
     public OrderNumber GetOrderNumber() { return m_OrderNumber; }

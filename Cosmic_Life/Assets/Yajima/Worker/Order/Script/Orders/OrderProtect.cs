@@ -33,9 +33,9 @@ public class OrderProtect : Order {
         print("Protect");
     }
 
-    public override void EndAction()
+    public override void EndAction(GameObject obj)
     {
-        base.EndAction();
+        base.EndAction(obj);
         // バリアの非表示
         m_Barrier.gameObject.SetActive(false);
     }

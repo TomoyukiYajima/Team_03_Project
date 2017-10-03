@@ -35,6 +35,8 @@ public class OrderMove : DirectionOrder {
         base.StartAction(obj);
         // 方向の設定
         SetDirection(obj);
+
+        //SetEndPlayOrder(OrderStatus.PROTECT);
     }
 
     public override void StartAction(GameObject obj, OrderDirection dir)
@@ -56,9 +58,9 @@ public class OrderMove : DirectionOrder {
         //obj.transform.position += m_Direction * m_MoveSpeed * deltaTime;
     }
 
-    public override void EndAction()
+    public override void EndAction(GameObject obj)
     {
-        base.EndAction();
+        base.EndAction(obj);
         m_OrderDirection = OrderDirection.FORWARD;
         m_IsRotation = false;
     }
