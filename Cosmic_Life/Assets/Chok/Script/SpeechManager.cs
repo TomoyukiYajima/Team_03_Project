@@ -21,40 +21,24 @@ public class OrderPair : Serialize.KeyAndValue<string, OrderStatus>
 }
 public class SpeechManager : MonoBehaviour
 {
-    [SerializeField, Tooltip("移動ファイル")] private string m_moveText;
-    [SerializeField, Tooltip("攻撃ファイル")] private string m_attackText;
-    [SerializeField, Tooltip("回転ファイル")] private string m_turnText;
-    [SerializeField, Tooltip("停止ファイル")] private string m_stopText;
-    [SerializeField, Tooltip("跳ぶファイル")] private string m_jumpText;
-
+    [SerializeField] private string m_path;
     [SerializeField] private OrderDictionary m_orderDictionary;
 
     private List<string> fileList;
-    private KeywordRecognizer m_Recognizer;
+    private KeywordRecognizer m_orderRecognizer;
+    private KeywordRecognizer m_unlockRecognizer;
 
     private Dictionary<string,List<string>> m_orderKeyword = new Dictionary<string, List<string>>();
-
-    //private Dictionary<string, OrderStatus> m_order1Type = new Dictionary<string, OrderStatus>();
 
     //#if !UNITY_EDITOR
     void Start()
     {
-        fileList = new List<string>() {
-            m_moveText,
-            m_attackText,
-            m_turnText,
-            m_stopText,
-            m_jumpText
-        };
-
-        string path = "Assets/Resources/";
-
         List<string> keywords = new List<string>();
         foreach(var list in m_orderDictionary.GetTable())
         {
             List<string> keywordList = new List<string>();
             //ストリームの生成、Open読み込み専門
-            FileStream fs = new FileStream(path + list.Value + ".txt", FileMode.Open);
+            FileStream fs = new FileStream(m_path + list.Key + ".txt", FileMode.Open);
             //ストリームから読み込み準備
             StreamReader sr = new StreamReader(fs);
             //読み込んで表示
@@ -66,14 +50,14 @@ public class SpeechManager : MonoBehaviour
             }
             //ストリームも終了させる
             sr.Close();
-            m_orderKeyword.Add(name,keywordList);
+            m_orderKeyword.Add(list.Key, keywordList);
             keywords.AddRange(keywordList);
         }
 
         // キーワードを格納
-        m_Recognizer = new KeywordRecognizer(keywords.ToArray());
-        m_Recognizer.OnPhraseRecognized += OnPhraseRecognized;
-        m_Recognizer.Start();
+        m_orderRecognizer = new KeywordRecognizer(keywords.ToArray());
+        m_orderRecognizer.OnPhraseRecognized += OnPhraseRecognized;
+        m_orderRecognizer.Start();
     }
 
     // キーワードを読み取ったら実行するメソッド
@@ -89,19 +73,13 @@ public class SpeechManager : MonoBehaviour
         // オーダー初期化
         OrderStatus orderType = OrderStatus.NULL;
 
-        //foreach(var text in m_moveKeyword)
-        //{
-        //    if (args.text != text) continue;
-        //    orderType = OrderStatus.MOVE;
-        //    break;
-        //}
-
         foreach (var list in m_orderKeyword)
         {
             foreach(var order in list.Value)
             {
                 if (args.text != order) continue;
                 m_orderDictionary.GetTable().TryGetValue(list.Key, out orderType);
+                break;
             }
         }
 
@@ -191,9 +169,9 @@ public class SpeechManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (m_Recognizer == null || !m_Recognizer.IsRunning) return;
-        m_Recognizer.OnPhraseRecognized -= OnPhraseRecognized;
-        m_Recognizer.Start();
+        if (m_orderRecognizer == null || !m_orderRecognizer.IsRunning) return;
+        m_orderRecognizer.OnPhraseRecognized -= OnPhraseRecognized;
+        m_orderRecognizer.Start();
     }
     //#endif
 }
