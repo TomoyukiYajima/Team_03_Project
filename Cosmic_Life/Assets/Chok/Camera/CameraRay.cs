@@ -6,18 +6,20 @@ using UnityEngine.EventSystems;
 public class CameraRay : MonoBehaviour
 {
     [SerializeField, Range(0f, 10f), Tooltip("レイ距離")] private float m_rayDist;
-    [SerializeField, Range(0f, 1f), Tooltip("プレイヤー視野角度")] private float m_rayAngle;
+    [SerializeField, Range(0f, 360f), Tooltip("プレイヤー視野角度")] private float m_rayAngle;
     //[SerializeField] private CameraManager m_cameraManager;
 
     private GameObject m_colliderObj;   // 当たったオブジェクトを格納する関数
     private Transform m_rayPos;         // レイ開始位置
+    private Transform m_player;         // プレイヤー
     private Vector3 m_rayDir;           // レイ方向
 
     // Use this for initialization
     void Start()
     {
+        m_player = GameObject.FindGameObjectWithTag("Player").transform;
         // プレイヤーのレイ開始座標
-        m_rayPos = GameObject.FindGameObjectWithTag("Player").transform.FindChild("RayPos").transform;
+        m_rayPos = m_player.FindChild("RayPos").transform;
 
         m_rayDir = Vector3.zero;
     }
@@ -25,11 +27,20 @@ public class CameraRay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var dir = (transform.position - m_player.position).normalized;
+        float angle = Vector3.Angle(m_player.forward,dir);
+        Debug.Log(angle);
+        
         // プレイヤー視野角度内かつプレイヤーの後ろにいるときしか更新しない
-        if (transform.forward.x > -m_rayAngle && transform.forward.x < m_rayAngle && transform.forward.z > 0.0f)
+        if (angle > m_rayAngle)
         {
             m_rayDir = transform.forward;
         }
+        //else
+        //{
+        //    m_rayDir = m_player.forward;
+        //}
+
         // y軸更新
         m_rayDir.y = transform.forward.y;
 

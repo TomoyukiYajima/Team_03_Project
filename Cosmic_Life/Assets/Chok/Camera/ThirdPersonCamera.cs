@@ -21,7 +21,7 @@ public class ThirdPersonCamera : MonoBehaviour{
     void Update()
     {
         // コントローラー右スティックで回転
-        var x = Input.GetAxis("HorizontalR") * Time.deltaTime * m_sensitivity;
+        //var x = Input.GetAxis("HorizontalR") * Time.deltaTime * m_sensitivity;
         var y = Input.GetAxis("VerticalR")   * Time.deltaTime * m_sensitivity;
         //x = Input.GetAxis("HorizontalD");
         //y = Input.GetAxis("VerticalD");
@@ -32,7 +32,7 @@ public class ThirdPersonCamera : MonoBehaviour{
         var lookAt = m_target.transform.position + Vector3.up * m_height;
 
         // ターゲットの
-        transform.RotateAround(lookAt, Vector3.up, x);
+        //transform.RotateAround(lookAt, Vector3.up, x);
 
         if (transform.forward.y >  0.3f && y < 0.0f) y = 0.0f;
         if (transform.forward.y < -0.9f && y > 0.0f) y = 0.0f;
