@@ -45,8 +45,9 @@ public class OrderLift : Order {
 
     //}
 
-    public override void StartAction(GameObject obj)
+    public override void StartAction(GameObject obj, GameObject actionObj)
     {
+        m_ActionObject = actionObj;
         // 持ち上げたオブジェクトを、元の親に戻す
         var liftObj = obj.transform.Find("LiftObject");
         // もし何か持っていれば、返す
@@ -59,39 +60,16 @@ public class OrderLift : Order {
         m_IsLift = false;
         m_isRotate = false;
 
-        // プレイヤーとの距離を求める
-        var player = GameObject.FindGameObjectWithTag("Player");
-        var playerLength = m_ObjectChecker.GetLength();
-        if (player != null) playerLength = Vector3.Distance(player.transform.position, this.transform.position);
-
-        if(playerLength >= m_ObjectChecker.GetLength())
-
-        // プレイヤーが範囲外の場合、近くに何も持つものがない場合は、返す
-        if (m_ObjectChecker.GetStageObjects().Count == 0 && playerLength >= m_ObjectChecker.GetLength())
+        // 参照するオブジェクトがある場合
+        if (actionObj != null)
         {
-            print("持ち上げるものがありません");
+            // 見ているものを持ち上げるオブジェクトに変更する
+            m_LiftObject = actionObj;
             return;
         }
 
-        // プレイヤーを持ち上げるオブジェクトに設定
-        m_LiftObject = player;
-
-        GameObject liftStageObj = null;
-        // ステージオブジェクトとの距離を求める
-        var objLength = m_ObjectChecker.GetLength();
-        for (int i = 0; i != m_ObjectChecker.GetStageObjects().Count; ++i)
-        {
-            // 相手との距離を求める
-            var length = Vector3.Distance(m_ObjectChecker.GetStageObjects()[i].transform.position, this.transform.position);
-            if (objLength > length)
-            {
-                objLength = length;
-                liftStageObj = m_ObjectChecker.GetStageObjects()[i];
-            }
-        }
-
-        // ステージオブジェクトがプレイヤーより近い場合は、ステージオブジェクトを持ち上げる
-        if (playerLength >= objLength) m_LiftObject = liftStageObj;
+        // オブジェクトの捜索
+        FindObject();
 
         // プレイヤーを持ち上げ状態に変更する
     }
@@ -161,6 +139,44 @@ public class OrderLift : Order {
         // 重力をオフにする
         body.useGravity = false;
         m_IsLift = true;
+    }
+
+    // 持ち上げるオブジェクトの捜索
+    private void FindObject()
+    {
+        // プレイヤーとの距離を求める
+        var player = GameObject.FindGameObjectWithTag("Player");
+        var playerLength = m_ObjectChecker.GetLength();
+        if (player != null) playerLength = Vector3.Distance(player.transform.position, this.transform.position);
+
+        if (playerLength >= m_ObjectChecker.GetLength())
+
+            // プレイヤーが範囲外の場合、近くに何も持つものがない場合は、返す
+            if (m_ObjectChecker.GetStageObjects().Count == 0 && playerLength >= m_ObjectChecker.GetLength())
+            {
+                print("持ち上げるものがありません");
+                return;
+            }
+
+        // プレイヤーを持ち上げるオブジェクトに設定
+        m_LiftObject = player;
+
+        GameObject liftStageObj = null;
+        // ステージオブジェクトとの距離を求める
+        var objLength = m_ObjectChecker.GetLength();
+        for (int i = 0; i != m_ObjectChecker.GetStageObjects().Count; ++i)
+        {
+            // 相手との距離を求める
+            var length = Vector3.Distance(m_ObjectChecker.GetStageObjects()[i].transform.position, this.transform.position);
+            if (objLength > length)
+            {
+                objLength = length;
+                liftStageObj = m_ObjectChecker.GetStageObjects()[i];
+            }
+        }
+
+        // ステージオブジェクトがプレイヤーより近い場合は、ステージオブジェクトを持ち上げる
+        if (playerLength >= objLength) m_LiftObject = liftStageObj;
     }
 
     // プレイヤーのみを持ち上げる

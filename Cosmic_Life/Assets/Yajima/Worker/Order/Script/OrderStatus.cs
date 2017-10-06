@@ -22,3 +22,11 @@ public enum OrderStatus {
     THROW           = 1 << 15,  // 投げる
     ALLSTOP         = 1 << 16,  // 全停止
 }
+
+public enum AttackOrderStatus
+{
+    NORMAL      = 1 << 0,   // 攻撃
+    HIGH        = 1 << 1,   // 上攻撃
+    LOW         = 1 << 2,   // 下攻撃
+    MOW_DOWN    = 1 << 3,   // 薙ぎ払い
+}

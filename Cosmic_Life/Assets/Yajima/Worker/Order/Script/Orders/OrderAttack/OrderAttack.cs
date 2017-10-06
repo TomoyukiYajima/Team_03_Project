@@ -46,7 +46,7 @@ public class OrderAttack : Order {
 
     //}
 
-    public override void StartAction(GameObject obj)
+    public override void StartAction(GameObject obj, GameObject actionObj)
     {
         base.StartAction(obj);
         // アクティブ状態に変更
