@@ -17,18 +17,33 @@ public class OrderDictionary : Serialize.TableBase<string, OrderStatus, OrderPai
 [System.Serializable]
 public class OrderPair : Serialize.KeyAndValue<string, OrderStatus>
 {
-    public OrderPair(string key, OrderStatus value) : base(key, value){}
+    public OrderPair(string key, OrderStatus value) : base(key, value) { }
+}
+
+[System.Serializable]
+public class DirectionDictionary : Serialize.TableBase<string, OrderDirection, DirectionPair> { }
+
+/// <summary>
+/// ジェネリックを隠すために継承してしまう
+/// [System.Serializable]を書くのを忘れない
+/// </summary>
+[System.Serializable]
+public class DirectionPair : Serialize.KeyAndValue<string, OrderDirection>
+{
+    public DirectionPair(string key, OrderDirection value) : base(key, value) { }
 }
 public class SpeechManager : MonoBehaviour
 {
     [SerializeField] private string m_path;
+    [SerializeField] private string m_unlockFile;
     [SerializeField] private OrderDictionary m_orderDictionary;
+    [SerializeField] private DirectionDictionary m_directionrDictionary;
 
-    private List<string> fileList;
     private KeywordRecognizer m_orderRecognizer;
     private KeywordRecognizer m_unlockRecognizer;
 
     private Dictionary<string,List<string>> m_orderKeyword = new Dictionary<string, List<string>>();
+    private List<string> m_unlockKeyword = new List<string>();
 
     //#if !UNITY_EDITOR
     void Start()
@@ -58,6 +73,26 @@ public class SpeechManager : MonoBehaviour
         m_orderRecognizer = new KeywordRecognizer(keywords.ToArray());
         m_orderRecognizer.OnPhraseRecognized += OnPhraseRecognized;
         m_orderRecognizer.Start();
+
+        {
+            //ストリームの生成、Open読み込み専門
+            FileStream fs = new FileStream(m_path + m_unlockFile + ".txt", FileMode.Open);
+            //ストリームから読み込み準備
+            StreamReader sr = new StreamReader(fs);
+            //読み込んで表示
+            while (!sr.EndOfStream)
+            {//最後の行に（なる以外）
+                string line = sr.ReadLine();
+                m_unlockKeyword.Add(line);
+                Debug.Log(line);
+            }
+            //ストリームも終了させる
+            sr.Close();
+        }
+
+        m_unlockRecognizer = new KeywordRecognizer(m_unlockKeyword.ToArray());
+        m_unlockRecognizer.OnPhraseRecognized += OnUnlockPhrase;
+        m_unlockRecognizer.Start();
     }
 
     // キーワードを読み取ったら実行するメソッド
@@ -72,50 +107,46 @@ public class SpeechManager : MonoBehaviour
 
         // オーダー初期化
         OrderStatus orderType = OrderStatus.NULL;
+        OrderDirection orderDir = OrderDirection.NULL;
 
+        // キーワードがどのリストに入ったをチェック
         foreach (var list in m_orderKeyword)
         {
             foreach(var order in list.Value)
             {
                 if (args.text != order) continue;
                 m_orderDictionary.GetTable().TryGetValue(list.Key, out orderType);
+
+                // 方向チェック
+                foreach(var dir in m_directionrDictionary.GetTable())
+                {
+                    if (!args.text.Contains(dir.Key)) continue;
+                    orderDir = dir.Value;
+                    break;
+                }
                 break;
             }
         }
-
-        //認識したキーワードで処理判定
-        //switch (args.text)
-        //{
-        //    case "すすめ":
-        //    case "すすんで":
-        //    case "ぜんしんせよ":
-        //    case "いどうしろ":
-        //        orderType = OrderStatus.MOVE;
-        //        break;
-        //    case "とまれ":
-        //        orderType = OrderStatus.STOP;
-        //        break;
-        //    case "じばくしろ":
-        //        orderType = OrderStatus.MOVE;
-        //        break;
-        //    case "みぎにまわれ":
-        //        orderType = OrderStatus.TURN_RIGHT;
-        //        break;
-        //    case "ひだりにまわれ":
-        //        orderType = OrderStatus.TURN_LEFT;
-        //        break;
-        //    case "こうげきしろ":
-        //    case "こわせ":
-        //    case "うて":
-        //    case "はかいしろ":
-        //        orderType = OrderStatus.ATTACK;
-        //        break;
-        //}
-
+        
         if (orderType == OrderStatus.NULL) return;
 
-        SendOrder(orderType, OrderDirection.NULL);
+        SendOrder(orderType, orderDir);
+    }
 
+    private void OnUnlockPhrase(PhraseRecognizedEventArgs args)
+    {
+        //ログ出力
+        StringBuilder builder = new StringBuilder();
+        builder.AppendFormat("{0} ({1}){2}", args.text, args.confidence, Environment.NewLine);
+        builder.AppendFormat("\tTimestamp: {0}{1}", args.phraseStartTime, Environment.NewLine);
+        builder.AppendFormat("\tDuration: {0} seconds{1}", args.phraseDuration.TotalSeconds, Environment.NewLine);
+        Debug.Log(builder.ToString());
+
+        foreach (var phrase in m_unlockKeyword)
+        {
+            if (args.text != phrase) continue;
+            break;
+        }
     }
 
     private void SendOrder(OrderStatus order, OrderDirection dir)
@@ -125,9 +156,10 @@ public class SpeechManager : MonoBehaviour
         //workerList.AddRange(GameObject.FindGameObjectsWithTag("Robot"));
         //workerList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
 
+        // シーンにいる全部のロボットを入れる
         var robotList = GameObject.FindGameObjectsWithTag("Robot");
 
-        // 全部のワーカにオーダーを出す
+        // 全部のロボットにオーダーを出す
         foreach (var robot in robotList)
         {
             // IRobotEventが実装されていなければreturn
@@ -137,10 +169,20 @@ public class SpeechManager : MonoBehaviour
                 return;
             }
 
-            ExecuteEvents.Execute<IOrderEvent>(
-                robot,
-                null,
-                (receive, y) => receive.onOrder(order, dir));
+            if (dir == OrderDirection.NULL)
+            {
+                ExecuteEvents.Execute<IOrderEvent>(
+                    robot,
+                    null,
+                    (receive, y) => receive.onOrder(order));
+            }
+            else
+            {
+                ExecuteEvents.Execute<IOrderEvent>(
+                    robot,
+                    null,
+                    (receive, y) => receive.onOrder(order, dir));
+            }
         }
 
         var enemyList = GameObject.FindGameObjectsWithTag("Enemy");
@@ -169,9 +211,16 @@ public class SpeechManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (m_orderRecognizer == null || !m_orderRecognizer.IsRunning) return;
-        m_orderRecognizer.OnPhraseRecognized -= OnPhraseRecognized;
-        m_orderRecognizer.Start();
+        if (m_orderRecognizer != null && m_orderRecognizer.IsRunning)
+        {
+            m_orderRecognizer.OnPhraseRecognized -= OnPhraseRecognized;
+            m_orderRecognizer.Start();
+        }
+        if (m_unlockRecognizer != null && m_unlockRecognizer.IsRunning)
+        {
+            m_unlockRecognizer.OnPhraseRecognized -= OnUnlockPhrase;
+            m_unlockRecognizer.Start();
+        }
     }
     //#endif
 }

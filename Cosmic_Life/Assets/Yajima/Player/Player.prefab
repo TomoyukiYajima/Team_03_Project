@@ -283,6 +283,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1309367211094286
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4745046747052726}
+  m_Layer: 0
+  m_Name: RayPos
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1357045341061658
 GameObject:
   m_ObjectHideFlags: 1
@@ -1433,6 +1448,7 @@ Transform:
   - {fileID: 4316213077868292}
   - {fileID: 4004882579840932}
   - {fileID: 4905741768719618}
+  - {fileID: 4745046747052726}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1953,7 +1969,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1498334082296284}
-  m_LocalRotation: {x: 0.53267515, y: 0.07034045, z: 0.83613265, w: -0.11041513}
+  m_LocalRotation: {x: 0.5326752, y: 0.070340455, z: 0.83613276, w: -0.110415146}
   m_LocalPosition: {x: 0.000022271464, y: -0.00006150465, z: 0.026027026}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2298,6 +2314,19 @@ Transform:
   m_Father: {fileID: 4758360297033866}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4745046747052726
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1309367211094286}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.406, z: 0.131}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4131555715864020}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4758279943721588
 Transform:
   m_ObjectHideFlags: 1
@@ -2603,6 +2632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_path: Assets/Resources/
+  m_unlockFile: unlock
   m_orderDictionary:
     list:
     - Key: move
@@ -2610,11 +2640,27 @@ MonoBehaviour:
     - Key: attack
       Value: 512
     - Key: turn
-      Value: 16
+      Value: 32
     - Key: stop
-      Value: 32768
+      Value: 65536
     - Key: jump
-      Value: 8192
+      Value: 16
+    - Key: mow
+      Value: 4096
+  m_directionrDictionary:
+    list:
+    - Key: "\u307E\u3048"
+      Value: 2
+    - Key: "\u3046\u3057\u308D"
+      Value: 4
+    - Key: "\u3072\u3060\u308A"
+      Value: 32
+    - Key: "\u307F\u304E"
+      Value: 64
+    - Key: "\u3046\u3048"
+      Value: 8
+    - Key: "\u3057\u305F"
+      Value: 16
 --- !u!136 &136046345911513272
 CapsuleCollider:
   m_ObjectHideFlags: 1
