@@ -104,14 +104,15 @@ public class Worker : MonoBehaviour, IOrderEvent
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN_RIGHT);
 
         // 持ち上げサンプル
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_MOW_DOWN);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.PULL_OUT);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) stopOrder(OrderStatus.ATTACK_HIGH);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) stopOrder(OrderStatus.ATTACK_HIGH);
 
         // 攻撃サンプル
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.MOVE, OrderDirection.RIGHT);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK_HIGH);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK_HIGH);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_LOW);
 
         m_StateTimer += time;
@@ -165,6 +166,7 @@ public class Worker : MonoBehaviour, IOrderEvent
                 // 番号の設定
                 //m_Orders[m_OrderNumbers[i]][m_OrderStatus[m_OrderNumbers[i]]].SetOrderNumber(m_OrderNumbers[i]);
                 m_Orders[m_OrderNumbers[i]][state].SetOrderNumber(m_OrderNumbers[i]);
+                m_Orders[m_OrderNumbers[i]][state].SetOrderState(state);
             }
         }
 

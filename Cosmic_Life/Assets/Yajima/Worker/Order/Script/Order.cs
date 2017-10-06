@@ -11,6 +11,8 @@ public class Order : MonoBehaviour {
     //protected bool m_IsEndPlayOrder = false;
     // 格納された命令番号
     protected OrderNumber m_OrderNumber = OrderNumber.ONE;
+    // 自身の命令状態
+    protected OrderStatus m_OrderState = OrderStatus.NULL;
     // 命令終了時に実行する命令
     //protected OrderStatus m_EndPlayOrder = OrderStatus.NULL;
 
@@ -47,6 +49,9 @@ public class Order : MonoBehaviour {
 
     // 命令番号を設定します
     public void SetOrderNumber(OrderNumber number) { m_OrderNumber = number; }
+
+    // 命令状態の設定
+    public void SetOrderState(OrderStatus state) { m_OrderState = state; }
 
     // 命令終了時に実行する命令を設定します
     //public void SetEndPlayOrder(OrderStatus order)
