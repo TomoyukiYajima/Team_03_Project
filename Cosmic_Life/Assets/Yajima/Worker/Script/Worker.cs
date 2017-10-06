@@ -97,11 +97,11 @@ public class Worker : MonoBehaviour, IOrderEvent
 
         // 命令(仮)　音声認識でプレイヤーから命令してもらう
         // OKボタンが押されたら、移動命令を行う
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.MOVE);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.JUMP);
         if (PlayerInputManager.GetInputDown(InputState.INPUT_CANCEL)) ChangeOrder(OrderStatus.ALLSTOP);
 
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN_LEFT);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN_RIGHT);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN, OrderDirection.LEFT);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN, OrderDirection.RIGHT);
 
         // 持ち上げサンプル
         if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
@@ -205,8 +205,9 @@ public class Worker : MonoBehaviour, IOrderEvent
         if (m_OrderList.IsOrder(OrderNumber.TWO, order)) number = OrderNumber.TWO;
         else if (m_OrderList.IsOrder(OrderNumber.THREE, order)) number = OrderNumber.THREE;
 
+        var orderDir = m_Orders[number][order].GetComponent<DirectionOrder>().GetDirection();
         // 命令がない場合は返す
-        if (!CheckrOrder(order, number) || m_OrderStatus[number] == order) return;
+        if (!CheckrOrder(order, number) || (m_OrderStatus[number] == order && orderDir == dir)) return;
 
         if(dir == OrderDirection.NULL) return;
 
@@ -226,7 +227,7 @@ public class Worker : MonoBehaviour, IOrderEvent
     public void Change(OrderStatus order, OrderNumber orderNum, OrderDirection dir, int number)
     {
         // 命令がない場合は返す
-        if (!CheckrOrder(order, orderNum) || m_OrderStatus[orderNum] == order) return;
+        if (!CheckrOrder(order, orderNum) || (m_OrderStatus[orderNum] == order)) return;
         print("命令承認！:" + orderNum.ToString() + ":" + m_OrderStatus[orderNum].ToString());
         // 最後の行動
         m_Orders[orderNum][m_OrderStatus[orderNum]].EndAction(gameObject);

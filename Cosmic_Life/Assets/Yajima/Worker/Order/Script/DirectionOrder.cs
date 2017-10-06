@@ -21,6 +21,8 @@ public class DirectionOrder : Order {
     public override void StartAction(GameObject obj)
     {
         base.StartAction(obj);
+        // 方向の設定
+        SetDirection(obj);
     }
 
     public virtual void StartAction(GameObject obj, OrderDirection dir)
@@ -28,6 +30,8 @@ public class DirectionOrder : Order {
         StartAction(obj);
         // 命令方向の変更
         m_OrderDirection = dir;
+        // 方向の設定
+        SetDirection(obj);
     }
 
     public override void Action(float deltaTime, GameObject obj)
@@ -39,4 +43,13 @@ public class DirectionOrder : Order {
     {
         base.EndAction(obj);
     }
+
+    // 移動方向の設定
+    protected virtual void SetDirection(GameObject obj)
+    {
+
+    }
+
+    // 命令方向の取得
+    public OrderDirection GetDirection() { return m_OrderDirection; }
 }

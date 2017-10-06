@@ -6,8 +6,10 @@ public enum OrderStatus {
     MOVE            = 1 << 1,   // 移動
     STOP            = 1 << 2,   // 停止
     RESUME          = 1 << 3,   // 再開
-    TURN_LEFT       = 1 << 4,   // 左回転
-    TURN_RIGHT      = 1 << 5,   // 右回転
+    JUMP            = 1 << 4,   // ジャンプ
+    TURN            = 1 << 5,   // 回転
+    //TURN_LEFT       = 1 << 5,   // 左回転
+    //TURN_RIGHT      = 1 << 6,   // 右回転
     LIFT            = 1 << 6,   // 持ち上げ
     PULL_OUT        = 1 << 7,   // 引き抜き
     TAKE_DOWN       = 1 << 8,   // 置く
