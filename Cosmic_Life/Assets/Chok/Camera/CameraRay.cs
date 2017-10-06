@@ -123,10 +123,10 @@ public class CameraRay : MonoBehaviour
                 return;
             }
 
-            //ExecuteEvents.Execute<IOrderEvent>(
-            //    robot,
-            //    null,
-            //    (receive, y) => receive.onOrder(order, dir));
+            ExecuteEvents.Execute<IOrderEvent>(
+                robot,
+                null,
+                (receive, y) => receive.setObject(obj));
         }
 
     }

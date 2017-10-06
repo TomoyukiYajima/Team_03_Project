@@ -102,9 +102,9 @@ public class Player : MonoBehaviour,IGeneralEvent
                 yield return null;
             }
 
-            float angle = Input.GetAxis("HorizontalR");
+            //float angle = Input.GetAxis("HorizontalR");
 
-            transform.Rotate(Vector3.up, angle);
+            //transform.Rotate(Vector3.up, angle);
 
             float x = Input.GetAxis("Vertical");
             float z = Input.GetAxis("Horizontal");
@@ -120,10 +120,10 @@ public class Player : MonoBehaviour,IGeneralEvent
             if (m_velocity.magnitude > 1f) m_velocity.Normalize();
             m_velocity = transform.InverseTransformDirection(m_velocity);
 
-            //float m_TurnAmount = Mathf.Atan2(m_velocity.x, m_velocity.z);
+            float m_TurnAmount = Mathf.Atan2(m_velocity.x, m_velocity.z);
 
-            //float turnSpeed = Mathf.Lerp(180.0f, 360.0f, m_velocity.z);
-            //transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
+            float turnSpeed = Mathf.Lerp(180.0f, 360.0f, m_velocity.z);
+            transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
 
             Vector3 v = (m_animator.deltaPosition * m_Speed) / Time.deltaTime;
 
@@ -134,7 +134,6 @@ public class Player : MonoBehaviour,IGeneralEvent
             m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
 
             //this.transform.position += m_velocity * m_Speed * time;
-
 
             m_animator.SetFloat("Forward", m_velocity.z, 0.1f, Time.deltaTime);
 
