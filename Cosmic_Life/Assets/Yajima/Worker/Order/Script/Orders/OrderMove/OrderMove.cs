@@ -30,7 +30,7 @@ public class OrderMove : DirectionOrder {
 
     //}
 
-    public override void StartAction(GameObject obj)
+    public override void StartAction(GameObject obj, GameObject actionObj)
     {
         base.StartAction(obj);
 

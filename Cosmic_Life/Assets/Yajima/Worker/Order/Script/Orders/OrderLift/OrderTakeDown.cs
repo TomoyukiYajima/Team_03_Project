@@ -22,7 +22,7 @@ public class OrderTakeDown : Order {
 
     //}
 
-    public override void StartAction(GameObject obj)
+    public override void StartAction(GameObject obj, GameObject actionObj)
     {
         // 持ち上げたオブジェクトを、元の親に戻す
         var liftObj = obj.transform.Find("LiftObject");

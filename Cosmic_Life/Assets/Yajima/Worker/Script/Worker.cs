@@ -17,7 +17,7 @@ public class Worker : MonoBehaviour, IOrderEvent
     #region 変数
     // ワーカーの名前
     [SerializeField]
-    private string m_WorkerName = "Worker";
+    private string m_WorkerName = "Undroid";
 
     // 接地しているか
     private bool m_IsGround = false;
@@ -49,8 +49,8 @@ public class Worker : MonoBehaviour, IOrderEvent
     //private Dictionary<OrderStatus, Action<float, GameObject>> m_Orders =
     //    new Dictionary<OrderStatus, Action<float, GameObject>>();
     // 命令変更関数格納リスト
-    private List<Action<OrderNumber, OrderDirection>> m_ChangeOrders =
-        new List<Action<OrderNumber, OrderDirection>>();
+    private List<Action<OrderNumber, OrderDirection, GameObject>> m_ChangeOrders =
+        new List<Action<OrderNumber, OrderDirection, GameObject>>();
     //private List<Action<OrderStatus, OrderNumber, int>> m_ChangeOrders =
     //    new List<Action<OrderStatus, OrderNumber, int>>();
 
@@ -59,6 +59,8 @@ public class Worker : MonoBehaviour, IOrderEvent
     // 命令実行時間
     protected float m_StateTimer = 0.0f;
 
+    // 参照するオブジェクト
+    protected GameObject m_ActionObject;
     // 剛体
     protected Rigidbody m_Rigidbody;
     #endregion
@@ -172,8 +174,8 @@ public class Worker : MonoBehaviour, IOrderEvent
 
         // 命令変更格納リストに追加
         //m_ChangeOrders.Add((orders, numbers, count) => { Change(orders, numbers); });
-        m_ChangeOrders.Add((number, dir) => { m_Orders[number][m_OrderStatus[number]].StartAction(gameObject); });
-        m_ChangeOrders.Add((number, dir) => { m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir); });
+        m_ChangeOrders.Add((number, dir, obj) => { m_Orders[number][m_OrderStatus[number]].StartAction(gameObject, obj); });
+        m_ChangeOrders.Add((number, dir, obj) => { m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir); });
         // m_Orders[number][m_OrderStatus[number]].GetComponent<DirectionOrder>().StartAction(gameObject, dir);
     }
 
@@ -235,7 +237,7 @@ public class Worker : MonoBehaviour, IOrderEvent
         m_OrderStatus[orderNum] = order;
         m_StateTimer = 0.0f;
         // 最初の行動
-        m_ChangeOrders[number](orderNum, dir);
+        m_ChangeOrders[number](orderNum, dir, m_ActionObject);
     }
 
     // 指定した命令があるかの確認を行います
@@ -254,7 +256,7 @@ public class Worker : MonoBehaviour, IOrderEvent
     #endregion
 
     #region イベント関数
-    #region ロボットインターフェース
+    #region オーダーインターフェース
     // イベントでの呼び出し
     public void onOrder(OrderStatus order)
     {
@@ -291,6 +293,11 @@ public class Worker : MonoBehaviour, IOrderEvent
     public void endOrder(OrderNumber number)
     {
         ChangeOrder(OrderStatus.NULL, number);
+    }
+    // イベントでの参照オブジェクトの設定処理の呼び出し
+    public void setObject(GameObject obj)
+    {
+        m_ActionObject = obj;
     }
     #endregion
     #endregion

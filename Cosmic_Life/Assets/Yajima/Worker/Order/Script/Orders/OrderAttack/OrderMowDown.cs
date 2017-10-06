@@ -22,7 +22,7 @@ public class OrderMowDown : OrderAttack {
 
     //}
 
-    public override void StartAction(GameObject obj)
+    public override void StartAction(GameObject obj, GameObject actionObj)
     {
         //base.StartAction(obj);
 
@@ -76,7 +76,7 @@ public class OrderMowDown : OrderAttack {
 
         //m_LiftObject.transform.LookAt(angleX, angleY, m_LiftObject.transform.eulerAngles.z);
 
-        m_LiftObject.transform.eulerAngles = new Vector3(m_LiftObject.transform.eulerAngles.x, m_InitAngle.y - angleY, m_LiftObject.transform.eulerAngles.z);
+        m_LiftObject.transform.eulerAngles = new Vector3(m_LiftObject.transform.eulerAngles.x, m_InitAngle.y - angleY + (90+ obj.transform.eulerAngles.y), m_LiftObject.transform.eulerAngles.z);
 
 
 

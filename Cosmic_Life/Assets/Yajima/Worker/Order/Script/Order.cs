@@ -16,6 +16,9 @@ public class Order : MonoBehaviour {
     // 命令終了時に実行する命令
     //protected OrderStatus m_EndPlayOrder = OrderStatus.NULL;
 
+    // 参照するオブジェクト
+    protected GameObject m_ActionObject;
+
     // Use this for initialization
     public virtual void Start() { }
 
@@ -23,7 +26,10 @@ public class Order : MonoBehaviour {
     public virtual void Update() { }
 
     // 最初の行動
-    public virtual void StartAction(GameObject obj) { }
+    public virtual void StartAction(GameObject obj, GameObject actionObj = null)
+    {
+        m_ActionObject = actionObj;
+    }
 
     // 行動
     public virtual void Action(float deltaTime, GameObject obj) { }
