@@ -22,7 +22,7 @@ public class Chasing : EnemyState {
         if (enemy.GetComponent<WalkEnemy>().CanSeePlayer())
         {
             //プレイヤーの場所へ向かう
-            enemy.GetComponent<WalkEnemy>().m_Agent.destination = enemy.GetPlayer().transform.position;
+            enemy.GetComponent<WalkEnemy>().m_Agent.destination = enemy.GetPlayer().transform.position - transform.forward * 1.3f;
 
             float distance = Vector3.Distance(transform.position, enemy.GetPlayer().transform.position);
 

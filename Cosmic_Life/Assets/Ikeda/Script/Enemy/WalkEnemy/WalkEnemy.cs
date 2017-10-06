@@ -107,6 +107,7 @@ public class WalkEnemy : Enemy {
 
     public void SetNewPatrolPointToDestination()
     {
+        if (m_RoundPoints[0] == null) return;
         m_CurrentPatrolPointIndex = (m_CurrentPatrolPointIndex + 1) % m_RoundPoints.Length;
 
         m_Agent.destination = m_RoundPoints[m_CurrentPatrolPointIndex].position;
@@ -132,21 +133,21 @@ public class WalkEnemy : Enemy {
             Gizmos.DrawRay(eyePosition, Quaternion.Euler(0, -m_ViewingAngle, 0) * forward);
         }
 
-        //巡回ルートを描画
-        if (m_RoundPoints != null)
-        {
-            Gizmos.color = new Color(0, 1, 0);
+        //    //巡回ルートを描画
+        //    if (m_RoundPoints != null)
+        //    {
+        //        Gizmos.color = new Color(0, 1, 0);
 
-            for (int i = 0; i < m_RoundPoints.Length; i++)
-            {
-                int startIndex = i;
-                int endIndex = i + 1;
+        //        for (int i = 0; i < m_RoundPoints.Length; i++)
+        //        {
+        //            int startIndex = i;
+        //            int endIndex = i + 1;
 
-                if (endIndex == m_RoundPoints.Length)
-                    endIndex = 0;
+        //            if (endIndex == m_RoundPoints.Length)
+        //                endIndex = 0;
 
-                Gizmos.DrawLine(m_RoundPoints[startIndex].position, m_RoundPoints[endIndex].position);
-            }
-        }
+        //            Gizmos.DrawLine(m_RoundPoints[startIndex].position, m_RoundPoints[endIndex].position);
+        //        }
+        //    }
     }
 }

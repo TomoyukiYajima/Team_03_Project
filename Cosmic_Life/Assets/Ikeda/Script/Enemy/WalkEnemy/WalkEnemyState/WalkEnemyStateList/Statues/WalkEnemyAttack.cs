@@ -21,7 +21,7 @@ public class WalkEnemyAttack : EnemyState {
     private GameObject m_AttackCollider;
 
     [SerializeField]
-    private float m_AttackTime = 60.0f; 
+    private float m_AttackTime = 15.0f; 
 
     private AttackState m_AttackState;
 
@@ -43,7 +43,7 @@ public class WalkEnemyAttack : EnemyState {
         {
             case AttackState.Attack:
                 m_AttackCollider.SetActive(true);
-                if (m_AttackTime > m_Timer) m_Timer += 1.0f * Time.deltaTime;
+                if (m_AttackTime > m_Timer) m_Timer +=  1.0f * Time.deltaTime;
                 else
                 {
                     m_Timer = 0;
