@@ -133,6 +133,7 @@ public class Player : MonoBehaviour, IGeneralEvent
 
     private void ChangeState(IEnumerator coroutine)
     {
+        m_rigidbody.velocity = Vector3.zero;
         m_isCanWalk = false;
         m_animator.SetFloat("Forward", 0, 0.1f, Time.deltaTime);
         StopAllCoroutines();
@@ -195,7 +196,6 @@ public class Player : MonoBehaviour, IGeneralEvent
 
     private IEnumerator Attack()
     {
-        m_rigidbody.velocity = Vector3.zero;
         // 攻撃コリジョン生成
         GameObject attack = Instantiate(m_attackCollision, m_attackPos.transform.position, m_attackPos.transform.rotation) as GameObject;
         DestroyObject(attack, 0.5f);
@@ -245,8 +245,24 @@ public class Player : MonoBehaviour, IGeneralEvent
         ChangeState(Damage());
     }
 
-    private void EndState()
+    public void HoldCrane(GameObject crane)
     {
+        // モーション
+        ChangeState(HoldingCrane(crane));
+    }
+
+    private IEnumerator HoldingCrane(GameObject crane)
+    {
+        while (true)
+        {
+            transform.position = crane.transform.position;
+            yield return null;
+        }
+    }
+
+    public void EndState()
+    {
+        StopAllCoroutines();
         m_isCanWalk = true;
     }
 
