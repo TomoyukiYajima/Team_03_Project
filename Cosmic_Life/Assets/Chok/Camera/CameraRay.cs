@@ -29,7 +29,6 @@ public class CameraRay : MonoBehaviour
     {
         var dir = (transform.position - m_player.position).normalized;
         float angle = Vector3.Angle(m_player.forward,dir);
-        Debug.Log(angle);
         
         // プレイヤー視野角度内かつプレイヤーの後ろにいるときしか更新しない
         if (angle > m_rayAngle)

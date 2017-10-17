@@ -2671,7 +2671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c79361d2e725b1347bee285904844732, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Speed: 1
+  m_Speed: 2.5
   m_attackCollision: {fileID: 1182278682401318, guid: ea9803f85624aec44b9b123128ddbc97,
     type: 2}
   m_attackPos: {fileID: 1304607218614064}
@@ -2700,9 +2700,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_height: 1.25
-  m_distance: 0.75
+  m_distance: 1.25
   m_sensitivity: 100
-  m_slide: 0.2
+  m_slide: 0.4
 --- !u!124 &124878014722816798
 Behaviour:
   m_ObjectHideFlags: 1
