@@ -86,7 +86,7 @@ public class OrderMowDown : OrderAttack {
     public override void EndAction(GameObject obj)
     {
         //base.EndAction(obj);
-        m_LiftObject.transform.position = m_StartPoint.position;
+        if (m_LiftObject != null) m_LiftObject.transform.position = m_StartPoint.position;
     }
 
     protected override void MoveObject()

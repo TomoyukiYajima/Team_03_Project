@@ -19,6 +19,8 @@ public class RobotAttackCollider : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        if (other.tag == "Player") return;
+
         // onDamage を呼ぶ
         // 相手側にイベントがなければ返す
         //if (!ExecuteEvents.CanHandleEvent<IEnemyEvent>(other.gameObject)) return;

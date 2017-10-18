@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// 持ち上げ命令クラス
+// 持ち命令クラス
 public class OrderLift : Order {
 
     // 
@@ -17,18 +17,18 @@ public class OrderLift : Order {
     // オブジェクトチェッカー
     [SerializeField]
     private ObjectChecker m_ObjectChecker;
-    // 持ち上げオブジェクト確認用オブジェクト
+    // 持つオブジェクト確認用オブジェクト
     [SerializeField]
     protected CheckLiftObject m_CheckLiftObject;
-    // 持ち上げポイント
+    // 持つポイント
     [SerializeField]
     private Transform m_LiftPoint;
-    // 持ち上げたか
+    // 持ったか
     protected bool m_IsLift = false;
 
     private bool m_isRotate = false;
 
-    // 持ち上げるステージオブジェクト
+    // 持つステージオブジェクト
     protected GameObject m_LiftObject;
     // 計算リスト
     private Dictionary<LiftObjectNumber, Action<int>> m_LiftMoves =
@@ -48,7 +48,7 @@ public class OrderLift : Order {
     public override void StartAction(GameObject obj, GameObject actionObj)
     {
         m_ActionObject = actionObj;
-        // 持ち上げたオブジェクトを、元の親に戻す
+        // 持っているオブジェクトを、元の親に戻す
         var liftObj = obj.transform.Find("LiftObject");
         // もし何か持っていれば、返す
         if (liftObj.childCount != 0)
@@ -57,21 +57,13 @@ public class OrderLift : Order {
             return;
         }
 
-        m_IsLift = false;
-        m_isRotate = false;
-
-        // 参照するオブジェクトがある場合
-        if (actionObj != null)
-        {
-            // 見ているものを持ち上げるオブジェクトに変更する
-            m_LiftObject = actionObj;
-            return;
-        }
-
         // オブジェクトの捜索
-        FindObject();
+        FindLiftObject(actionObj);
 
-        // プレイヤーを持ち上げ状態に変更する
+        // リフトクラスを継承した子クラスのオブジェクトチェック関数を呼ぶ
+        // m_LiftCheck[checkNumber].CheckObject(obj);
+
+        // プレイヤーを持つ状態に変更する
     }
 
     public override void Action(float deltaTime, GameObject obj)
@@ -79,7 +71,7 @@ public class OrderLift : Order {
         print("Lift");
 
         if (m_IsLift) return;
-        // 持ち上げられるかのチェック
+        // 持てるかのチェック
         CheckLift(obj);
         // 移動
         Move(deltaTime, obj);
@@ -90,16 +82,16 @@ public class OrderLift : Order {
         m_LiftObject = null;
     }
 
-    // 持ち上げられるかのチェックを行います
+    // 持てるかのチェックを行います
     protected void CheckLift(GameObject obj)
     {
         if (m_CheckLiftObject.IsCheckLift(m_LiftObject))
         {
-            // 相手の持ち上げポイントを取得する
+            // 相手の持つポイントを取得する
             var point = m_LiftObject.transform.Find("LiftPoint");
             float length = Mathf.Abs(point.position.y - m_LiftPoint.transform.position.y);
             m_LiftObject.transform.position += Vector3.up * length;
-            // 持ち上げたオブジェクトを、ロボットの持つオブジェクトに変更する
+            // 持つオブジェクトを、ロボットの持つオブジェクトに変更する
             AddLiftObj(obj);
             return;
         }
@@ -142,8 +134,19 @@ public class OrderLift : Order {
     }
 
     // 持ち上げるオブジェクトの捜索
-    private void FindObject()
+    protected void FindLiftObject(GameObject actionObj)
     {
+        m_IsLift = false;
+        m_isRotate = false;
+
+        // 参照するオブジェクトがある場合
+        if (actionObj != null)
+        {
+            // 見ているものを持つオブジェクトに変更する
+            m_LiftObject = actionObj;
+            return;
+        }
+
         // プレイヤーとの距離を求める
         var player = GameObject.FindGameObjectWithTag("Player");
         var playerLength = m_ObjectChecker.GetLength();
@@ -158,7 +161,7 @@ public class OrderLift : Order {
                 return;
             }
 
-        // プレイヤーを持ち上げるオブジェクトに設定
+        // プレイヤーを持つオブジェクトに設定
         m_LiftObject = player;
 
         GameObject liftStageObj = null;
@@ -175,7 +178,7 @@ public class OrderLift : Order {
             }
         }
 
-        // ステージオブジェクトがプレイヤーより近い場合は、ステージオブジェクトを持ち上げる
+        // ステージオブジェクトがプレイヤーより近い場合は、ステージオブジェクトを持つ
         if (playerLength >= objLength) m_LiftObject = liftStageObj;
     }
 

@@ -45,7 +45,7 @@ public class StageObject : MonoBehaviour {
 	void Update () {
         m_isGround = false;
 
-        m_Rigidbody.velocity = Vector3.zero;
+        //m_Rigidbody.velocity = Vector3.zero;
 	}
 
     // 自己発光の設定を行います
