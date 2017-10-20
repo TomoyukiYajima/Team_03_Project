@@ -19,6 +19,9 @@ public class Order : MonoBehaviour {
     // 参照するオブジェクト
     protected GameObject m_ActionObject;
 
+    // 方向
+    protected OrderDirection m_Dir = OrderDirection.FORWARD;
+
     // Use this for initialization
     public virtual void Start() { }
 
@@ -29,6 +32,7 @@ public class Order : MonoBehaviour {
     public virtual void StartAction(GameObject obj, GameObject actionObj = null)
     {
         m_ActionObject = actionObj;
+        m_Dir = obj.GetComponent<Worker>().GetOrderDir();
     }
 
     // 行動

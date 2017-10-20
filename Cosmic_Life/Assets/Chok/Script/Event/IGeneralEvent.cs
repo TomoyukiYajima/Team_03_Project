@@ -9,4 +9,12 @@ public interface IGeneralEvent : IEventSystemHandler {
     /// </summary>
     /// <param name="amount">ダメージ量</param>
     void onDamage(int amount);
+
+    //void onShock();
+
+    //void onThrow();
+
+    //void onLift(GameObject crane);
+
+    //void onTakeDown();
 }

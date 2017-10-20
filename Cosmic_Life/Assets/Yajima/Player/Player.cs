@@ -9,10 +9,12 @@ public enum PlayerState
     NULL = 1 << 0,
     IDLE = 1 << 1,
     ATTACK = 1 << 2,
+    HOLD = 1 << 3,
+
 }
 
 
-public class Player : MonoBehaviour,IGeneralEvent
+public class Player : MonoBehaviour, IGeneralEvent
 {
 
     [SerializeField, Tooltip("移動速度")] private float m_Speed;
@@ -26,6 +28,7 @@ public class Player : MonoBehaviour,IGeneralEvent
     private Vector3 m_velocity;
 
     private bool m_isDamaged;
+    private bool m_isCanWalk;
 
     // Use this for initialization
     void Start()
@@ -48,8 +51,8 @@ public class Player : MonoBehaviour,IGeneralEvent
         m_state = PlayerState.IDLE;
         m_velocity = Vector3.zero;
         m_isDamaged = false;
-
-        ChangeState(Move());
+        m_isCanWalk = true;
+        //ChangeState(Move());
     }
 
     // Update is called once per frame
@@ -58,8 +61,63 @@ public class Player : MonoBehaviour,IGeneralEvent
         if (Input.GetButtonDown("X")) { onDamage(0); }
 
         //m_animator.SetFloat("Forward", m_velocity.z, 0.1f, Time.deltaTime);
-        
+
     }
+
+    private void FixedUpdate()
+    {
+        if (!m_isCanWalk) return;
+
+        if (Input.GetButtonDown("OK"))
+        {
+            ChangeState(Attack());
+            return;
+        }
+
+        float v = Input.GetAxis("Vertical");
+        float h = Input.GetAxis("Horizontal");
+        float hR = Input.GetAxis("HorizontalR");
+
+        Vector3 velocity = Vector3.zero;
+
+        //velocity = new Vector3(x, 0, z);
+        if (m_camera != null)
+        {
+            var forward = Vector3.Scale(m_camera.forward, new Vector3(1, 0, 1)).normalized;
+            velocity = transform.forward * v + transform.right * hR;
+        }
+
+        if (velocity.magnitude > 1f) velocity.Normalize();
+        velocity = transform.InverseTransformDirection(velocity);
+
+        float turnZ = Mathf.Clamp(velocity.z, 0.1f, 1.0f);
+
+        float m_TurnAmount = Mathf.Atan2(velocity.x, turnZ);
+
+        float turnSpeed = Mathf.Lerp(180.0f, 360.0f, velocity.z);
+        transform.Rotate(0, m_TurnAmount * turnSpeed * Time.fixedDeltaTime, 0);
+
+        Vector3 ve = (m_animator.deltaPosition * m_Speed) / Time.fixedDeltaTime;
+
+        // we preserve the existing y part of the current velocity.
+        ve.y = m_rigidbody.velocity.y;
+        m_rigidbody.velocity = ve;
+
+        m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
+
+        transform.position += transform.right * h * 2.5f * Time.fixedDeltaTime;
+
+        if (velocity.z < 0.0f)
+        {
+            this.transform.position += transform.forward * v * m_Speed * Time.fixedDeltaTime;
+        }
+
+        m_animator.SetFloat("Forward", velocity.z, 0.1f, Time.fixedDeltaTime);
+
+
+    }
+
+
 
     private void UpdateState()
     {
@@ -77,14 +135,11 @@ public class Player : MonoBehaviour,IGeneralEvent
 
     private void ChangeState(IEnumerator coroutine)
     {
+        m_rigidbody.velocity = Vector3.zero;
+        m_isCanWalk = false;
+        m_animator.SetFloat("Forward", 0);
         StopAllCoroutines();
         StartCoroutine(coroutine);
-    }
-
-    private void ToMoveState()
-    {
-        StopAllCoroutines();
-        StartCoroutine(Move());
     }
 
     private IEnumerator Move()
@@ -98,43 +153,42 @@ public class Player : MonoBehaviour,IGeneralEvent
 
             if (Input.GetButtonDown("OK"))
             {
-                ToAttackState();
                 yield return null;
             }
 
-            float angle = Input.GetAxis("HorizontalR");
+            //float angle = Input.GetAxis("HorizontalR");
 
-            transform.Rotate(Vector3.up, angle);
+            //transform.Rotate(Vector3.up, angle);
 
-            float x = Input.GetAxis("Vertical");
-            float z = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
+            float h = Input.GetAxis("Horizontal");
+
+            Vector2 velocity = new Vector2(h, v);
 
             //velocity = new Vector3(x, 0, z);
             if (m_camera != null)
             {
-                //var forward = Vector3.Scale(m_camera.forward, new Vector3(1, 0, 1)).normalized;
-                m_velocity += this.transform.forward * x;
-                m_velocity += this.transform.right * z;
+                var forward = Vector3.Scale(m_camera.forward, new Vector3(1, 0, 1)).normalized;
+                m_velocity = forward * velocity.y + m_camera.transform.right * velocity.x;
             }
 
             if (m_velocity.magnitude > 1f) m_velocity.Normalize();
             m_velocity = transform.InverseTransformDirection(m_velocity);
 
-            //float m_TurnAmount = Mathf.Atan2(m_velocity.x, m_velocity.z);
+            float m_TurnAmount = Mathf.Atan2(m_velocity.x, m_velocity.z);
 
-            //float turnSpeed = Mathf.Lerp(180.0f, 360.0f, m_velocity.z);
-            //transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
+            float turnSpeed = Mathf.Lerp(180.0f, 360.0f, m_velocity.z);
+            transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
 
-            Vector3 v = (m_animator.deltaPosition * m_Speed) / Time.deltaTime;
+            Vector3 ve = (m_animator.deltaPosition * m_Speed) / Time.deltaTime;
 
             // we preserve the existing y part of the current velocity.
-            v.y = m_rigidbody.velocity.y;
-            m_rigidbody.velocity = v;
+            ve.y = m_rigidbody.velocity.y;
+            m_rigidbody.velocity = ve;
 
             m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
 
             //this.transform.position += m_velocity * m_Speed * time;
-
 
             m_animator.SetFloat("Forward", m_velocity.z, 0.1f, Time.deltaTime);
 
@@ -142,26 +196,15 @@ public class Player : MonoBehaviour,IGeneralEvent
         }
     }
 
-    private void ToAttackState()
-    {
-        // コールチンを停止
-        StopAllCoroutines();
-
-        // 状態変更
-        //m_state = PlayerState.ATTACK;
-        StartCoroutine(Attack());
-    }
-
     private IEnumerator Attack()
     {
-        m_rigidbody.velocity = Vector3.zero;
         // 攻撃コリジョン生成
         GameObject attack = Instantiate(m_attackCollision, m_attackPos.transform.position, m_attackPos.transform.rotation) as GameObject;
         DestroyObject(attack, 0.5f);
         // モーション変更
 
         yield return new WaitForSeconds(1.0f);
-        ToMoveState();
+        EndState();
         yield return null;
     }
 
@@ -174,7 +217,7 @@ public class Player : MonoBehaviour,IGeneralEvent
 
         yield return new WaitWhile(() => m_isDamaged);
 
-        ToMoveState();
+        EndState();
 
         yield return null;
     }
@@ -201,6 +244,49 @@ public class Player : MonoBehaviour,IGeneralEvent
         StopAllCoroutines();
         m_isDamaged = true;
 
-        StartCoroutine(Damage());
+        ChangeState(Damage());
     }
+
+    public void onLift(GameObject crane)
+    {
+        // モーション
+        ChangeState(HoldingCrane(crane));
+    }
+
+    public void onTakeDown()
+    {
+        EndState();
+    }
+
+    private IEnumerator HoldingCrane(GameObject crane)
+    {
+        while (true)
+        {
+            transform.position = crane.transform.position;
+            if (Input.GetButtonDown("Cancel"))
+            {
+                EndState();
+            }
+            yield return null;
+        }
+    }
+
+    public void EndState()
+    {
+        StopAllCoroutines();
+        m_isCanWalk = true;
+    }
+
+    //public void OnAnimatorMove()
+    //{
+    //    Vector3 v = (m_animator.deltaPosition * m_Speed) / Time.fixedDeltaTime;
+
+    //    // we preserve the existing y part of the current velocity.
+    //    v.y = m_rigidbody.velocity.y;
+    //    m_rigidbody.velocity = v;
+
+    //    m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
+
+    //}
+
 }

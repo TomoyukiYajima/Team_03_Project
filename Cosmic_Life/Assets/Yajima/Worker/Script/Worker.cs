@@ -41,6 +41,9 @@ public class Worker : MonoBehaviour, IOrderEvent
     // 命令リストのリスト
     private Dictionary<OrderNumber, Dictionary<OrderStatus, Order>> m_Orders =
         new Dictionary<OrderNumber, Dictionary<OrderStatus, Order>>();
+    // 前回の命令のリスト
+    private Dictionary<OrderNumber, OrderStatus> m_PrevOrders =
+        new Dictionary<OrderNumber, OrderStatus>();
     // 命令列挙リスト
     private List<OrderNumber> m_OrderNumbers =
         new List<OrderNumber>();
@@ -58,6 +61,8 @@ public class Worker : MonoBehaviour, IOrderEvent
     protected OrderList m_OrderList;
     // 命令実行時間
     protected float m_StateTimer = 0.0f;
+    // 方向
+    private OrderDirection m_OrderDir = OrderDirection.FORWARD;
 
     // 参照するオブジェクト
     protected GameObject m_ActionObject;
@@ -99,15 +104,18 @@ public class Worker : MonoBehaviour, IOrderEvent
 
         // 命令(仮)　音声認識でプレイヤーから命令してもらう
         // OKボタンが押されたら、移動命令を行う
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.JUMP);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.MOVE);
         if (PlayerInputManager.GetInputDown(InputState.INPUT_CANCEL)) ChangeOrder(OrderStatus.ALLSTOP);
 
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN, OrderDirection.LEFT);
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN, OrderDirection.RIGHT);
 
-        // 持ち上げサンプル
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_MOW_DOWN);
+        //// 持ち上げサンプル
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.THROW);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.LIFT_UP);
+        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_MOW_DOWN);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.PULL_OUT);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) stopOrder(OrderStatus.ATTACK_HIGH);
@@ -119,7 +127,7 @@ public class Worker : MonoBehaviour, IOrderEvent
 
         m_StateTimer += time;
 
-        m_Rigidbody.velocity = Vector3.zero;
+        m_Rigidbody.velocity = new Vector3(0.0f, m_Rigidbody.velocity.y, 0.0f);
 
         // 一定時間命令がなかったら、寝そべる
         if (m_StateTimer >= 20.0f)
@@ -128,10 +136,10 @@ public class Worker : MonoBehaviour, IOrderEvent
         }
 
         // 接地していない場合は、重力加算
-        //if (!m_IsGround)
-        //{
-        //    this.transform.position += Vector3.down * 9.8f * time;
-        //}
+        if (!m_IsGround)
+        {
+            //this.transform.position += Vector3.down * 9.8f * time;
+        }
     }
     #endregion
 
@@ -170,6 +178,7 @@ public class Worker : MonoBehaviour, IOrderEvent
                 m_Orders[m_OrderNumbers[i]][state].SetOrderNumber(m_OrderNumbers[i]);
                 m_Orders[m_OrderNumbers[i]][state].SetOrderState(state);
             }
+            m_PrevOrders[m_OrderNumbers[i]] = OrderStatus.NULL;
         }
 
         // 命令変更格納リストに追加
@@ -253,6 +262,11 @@ public class Worker : MonoBehaviour, IOrderEvent
         // 同一の命令がない
         return false;
     }
+
+    // 命令方向の変更
+    public void SetOrderDir(OrderDirection dir) { m_OrderDir = dir; }
+    // 命令方向の取得
+    public OrderDirection GetOrderDir() { return m_OrderDir; }
     #endregion
 
     #region イベント関数
@@ -298,6 +312,11 @@ public class Worker : MonoBehaviour, IOrderEvent
     public void setObject(GameObject obj)
     {
         m_ActionObject = obj;
+    }
+    // イベントでの前回の命令の取得
+    public OrderStatus getOrderState(OrderNumber number)
+    {
+        return m_PrevOrders[number];
     }
     #endregion
     #endregion
