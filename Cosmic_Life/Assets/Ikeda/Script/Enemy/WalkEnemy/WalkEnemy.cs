@@ -5,9 +5,6 @@ using UnityEngine.AI;
 
 public class WalkEnemy : Enemy {
 
-
-
-
     public NavMeshAgent m_Agent;
 
     //現在の巡回ポイントのインデックス
@@ -39,7 +36,7 @@ public class WalkEnemy : Enemy {
         //最初の状態を設定する
         ChangeState(EnemyStatus.RoundState);
 
-        m_PlayerLookPoint = m_Player.transform.Find("LookPoint");
+        //m_PlayerLookPoint = m_Player.transform.Find("LookPoint");
         m_EyePoint = transform.Find("EyePoint");
     }
 
@@ -68,6 +65,7 @@ public class WalkEnemy : Enemy {
 
     bool IsPlayerInViewingDistance()
     {
+        if (m_Player == null) return false;
         //自身からプレイヤーまでの距離
         float distanceToPlayer = Vector3.Distance(m_PlayerLookPoint.position, m_EyePoint.position);
 
@@ -96,7 +94,6 @@ public class WalkEnemy : Enemy {
 
         //プレイヤーにRayが当たったかどうか返却する
         return (hit && hitInfo.collider.tag == "Player");
-
     }
 
 
@@ -116,6 +113,11 @@ public class WalkEnemy : Enemy {
     public void SetViewAngle(float angle)
     {
         m_ViewingAngle = angle;
+    }
+
+    public override void onDamage(int amount)
+    {
+        Destroy(gameObject);
     }
 
     public void OnDrawGizmos()

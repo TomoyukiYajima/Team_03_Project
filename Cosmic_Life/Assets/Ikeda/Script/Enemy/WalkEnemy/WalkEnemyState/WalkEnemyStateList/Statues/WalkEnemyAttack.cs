@@ -57,7 +57,11 @@ public class WalkEnemyAttack : EnemyState {
 
                 //攻撃後のプレイヤーとの距離を測って、離れていたら追跡中に変更
                 if (Vector3.Distance(transform.position, l_PlayerPosition) <= m_DistanceCompare) m_AttackState = AttackState.Attack;
-                else enemy.ChangeState(EnemyStatus.Chasing);
+                else
+                {
+                    enemy.ChangeState(EnemyStatus.Chasing);
+                    m_AttackState = AttackState.Attack;
+                }
                 break;
         }
     }
