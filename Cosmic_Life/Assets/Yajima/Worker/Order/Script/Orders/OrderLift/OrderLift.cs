@@ -79,7 +79,9 @@ public class OrderLift : Order {
 
     public override void EndAction(GameObject obj)
     {
+        //m_IsLift = false;
         m_LiftObject = null;
+        m_CheckLiftObject.ReleaseObject();
     }
 
     // 持てるかのチェックを行います
@@ -100,11 +102,11 @@ public class OrderLift : Order {
     // 移動
     protected void Move(float deltaTime, GameObject obj)
     {
-        if(m_LiftObject == null)
-        {
-            ChangeOrder(obj, OrderStatus.NULL);
-            return;
-        }
+        //if(m_LiftObject == null)
+        //{
+        //    EndOrder(obj);
+        //    return;
+        //}
 
         var dis = m_LiftObject.transform.position - this.transform.position;
         dis.y = 0.0f;
@@ -165,7 +167,8 @@ public class OrderLift : Order {
             {
                 print("持ち上げるものがありません");
                 // 空の状態に遷移
-                ChangeOrder(obj, OrderStatus.NULL);
+                //ChangeOrder(obj, OrderStatus.NULL);
+                EndOrder(obj);
                 return;
             }
         }
@@ -173,10 +176,11 @@ public class OrderLift : Order {
         // プレイヤーを持つオブジェクトに設定
         m_LiftObject = player;
 
-        GameObject liftStageObj = null;
+        GameObject liftStageObj = m_ObjectChecker.GetStageObjects()[0];
         // ステージオブジェクトとの距離を求める
-        var objLength = m_ObjectChecker.GetLength();
-        for (int i = 0; i != m_ObjectChecker.GetStageObjects().Count; ++i)
+        //var objLength = m_ObjectChecker.GetLength();
+        var objLength = Vector3.Distance(liftStageObj.transform.position, this.transform.position);
+        for (int i = 1; i != m_ObjectChecker.GetStageObjects().Count; ++i)
         {
             // 相手との距離を求める
             var length = Vector3.Distance(m_ObjectChecker.GetStageObjects()[i].transform.position, this.transform.position);

@@ -28,6 +28,12 @@ public class CheckLiftObject : MonoBehaviour
         return true;
     }
 
+    // 登録したオブジェクトを解放します
+    public void ReleaseObject()
+    {
+        m_LiftObject = null;
+    }
+
     public void OnTriggerEnter(Collider other)
     {
         if(other.tag != "StageObject") return;

@@ -18,6 +18,20 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
     // ワーカーの名前
     [SerializeField]
     private string m_WorkerName = "Undroid";
+    // 移動速度
+    [SerializeField]
+    private float m_MoveSpeed = 5.0f;
+    // 回転速度
+    [SerializeField]
+    private float m_RotateSpeed = 30.0f;
+    // 投げる力
+    [SerializeField]
+    private float m_ThrowPowor = 10.0f;
+    // デバックするか
+    [SerializeField]
+    private bool m_IsDebug = false;
+    // どこを向いているか
+    private GameObject m_LookObject;
 
     // 接地しているか
     private bool m_IsGround = false;
@@ -79,6 +93,8 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
         SetOrder();
 
         m_Rigidbody = this.GetComponent<Rigidbody>();
+
+        m_LookObject = this.transform.Find("LookObject").gameObject;
     }
 
     // Update is called once per frame
@@ -103,27 +119,38 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
         //if (m_Orders[m_OrderState].IsEndOrder()) ChangeOrder(OrderStatus.NULL);
 
         // 命令(仮)　音声認識でプレイヤーから命令してもらう
-        // OKボタンが押されたら、移動命令を行う
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.MOVE);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_CANCEL)) ChangeOrder(OrderStatus.ALLSTOP);
+        if (m_IsDebug)
+        {
+            // OKボタンが押されたら、移動命令を行う
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.MOVE);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_CANCEL)) ChangeOrder(OrderStatus.ALLSTOP);
 
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN, OrderDirection.LEFT);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN, OrderDirection.RIGHT);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.LOOK, OrderDirection.UP);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.LOOK, OrderDirection.DOWN);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN, OrderDirection.LEFT);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN, OrderDirection.RIGHT);
 
-        //// 持ち上げサンプル
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.THROW);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.LIFT_UP);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_MOW_DOWN);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.PULL_OUT);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) stopOrder(OrderStatus.ATTACK_HIGH);
+            //// 持ち上げサンプル
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LOOK, OrderDirection.UP);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.THROW);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.LIFT_UP);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_MOW_DOWN);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.PULL_OUT);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.TAKE_DOWN);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) stopOrder(OrderStatus.ATTACK_HIGH);
 
-        // 攻撃サンプル
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.MOVE, OrderDirection.RIGHT);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK_HIGH);
-        //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_LOW);
+            // 攻撃サンプル
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.MOVE, OrderDirection.RIGHT);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK_HIGH);
+            //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_LOW);
+
+        }
+
+        if (m_OrderDir == OrderDirection.UP) m_LookObject.transform.localPosition = Vector3.up;
+        else if (m_OrderDir == OrderDirection.DOWN) m_LookObject.transform.localPosition = Vector3.down;
+        else if (m_OrderDir == OrderDirection.FORWARD) m_LookObject.transform.localPosition = Vector3.zero;
+        //print(m_OrderDir.ToString());
 
         m_StateTimer += time;
 
