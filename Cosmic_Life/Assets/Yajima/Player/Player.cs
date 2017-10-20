@@ -26,9 +26,13 @@ public class Player : MonoBehaviour, IGeneralEvent
     private Rigidbody m_rigidbody;
     private PlayerState m_state;
     private Vector3 m_velocity;
+    private Vector3 m_groundNormal;
 
     private bool m_isDamaged;
     private bool m_isCanWalk;
+    private bool m_isGrounded;
+    private float m_groundCheckDistance;
+    private float m_origGroundCheckDistance;
 
     // Use this for initialization
     void Start()
@@ -53,6 +57,8 @@ public class Player : MonoBehaviour, IGeneralEvent
         m_isDamaged = false;
         m_isCanWalk = true;
         //ChangeState(Move());
+        m_groundCheckDistance = 0.1f;
+        m_origGroundCheckDistance = m_groundCheckDistance;
     }
 
     // Update is called once per frame
@@ -89,6 +95,8 @@ public class Player : MonoBehaviour, IGeneralEvent
 
         if (velocity.magnitude > 1f) velocity.Normalize();
         velocity = transform.InverseTransformDirection(velocity);
+        CheckGroundStatus();
+        velocity = Vector3.ProjectOnPlane(velocity, m_groundNormal);
 
         float turnZ = Mathf.Clamp(velocity.z, 0.1f, 1.0f);
 
@@ -103,14 +111,31 @@ public class Player : MonoBehaviour, IGeneralEvent
         ve.y = m_rigidbody.velocity.y;
         m_rigidbody.velocity = ve;
 
-        m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
-
-        transform.position += transform.right * h * 2.5f * Time.fixedDeltaTime;
-
-        if (velocity.z < 0.0f)
+        if (m_isGrounded && Time.fixedDeltaTime > 0)
         {
-            this.transform.position += transform.forward * v * m_Speed * Time.fixedDeltaTime;
+            m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
+            m_groundCheckDistance = 0.1f;
+            m_isGrounded = false;
+
+            transform.position += transform.right * h * 2.5f * Time.fixedDeltaTime;
+
+            if (velocity.z < 0.0f)
+            {
+                this.transform.position += transform.forward * v * m_Speed * 2.5f * Time.fixedDeltaTime;
+            }
+
         }
+        else
+        {
+            // apply extra gravity from multiplier:
+            Vector3 extraGravityForce = (Physics.gravity * 2f) - Physics.gravity;
+            m_rigidbody.AddForce(extraGravityForce);
+
+            m_groundCheckDistance = m_rigidbody.velocity.y < 0 ? m_origGroundCheckDistance : 0.01f;
+
+        }
+
+
 
         m_animator.SetFloat("Forward", velocity.z, 0.1f, Time.fixedDeltaTime);
 
@@ -288,5 +313,29 @@ public class Player : MonoBehaviour, IGeneralEvent
     //    m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
 
     //}
+
+    void CheckGroundStatus()
+    {
+        RaycastHit hitInfo;
+#if UNITY_EDITOR
+        // helper to visualise the ground check ray in the scene view
+        Debug.DrawLine(transform.position + (Vector3.up * 0.1f), transform.position + (Vector3.up * 0.1f) + (Vector3.down * m_groundCheckDistance));
+#endif
+        // 0.1f is a small offset to start the ray from inside the character
+        // it is also good to note that the transform position in the sample assets is at the base of the character
+        if (Physics.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, m_groundCheckDistance))
+        {
+            m_groundNormal = hitInfo.normal;
+            m_isGrounded = true;
+            //m_animator.applyRootMotion = true;
+        }
+        else
+        {
+            m_isGrounded = false;
+            m_groundNormal = Vector3.up;
+            //m_animator.applyRootMotion = false;
+        }
+    }
+
 
 }
