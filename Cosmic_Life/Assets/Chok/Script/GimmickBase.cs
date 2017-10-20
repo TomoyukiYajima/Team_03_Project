@@ -17,7 +17,7 @@ public class GimmickBase : MonoBehaviour,IGimmickEvent {
 		
 	}
 
-    public virtual void onActivate()
+    public virtual void onActivate(GameObject obj)
     {
     }
 

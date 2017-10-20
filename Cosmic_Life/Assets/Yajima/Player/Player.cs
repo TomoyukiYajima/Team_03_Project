@@ -9,6 +9,8 @@ public enum PlayerState
     NULL = 1 << 0,
     IDLE = 1 << 1,
     ATTACK = 1 << 2,
+    HOLD = 1 << 3,
+
 }
 
 
@@ -135,7 +137,7 @@ public class Player : MonoBehaviour, IGeneralEvent
     {
         m_rigidbody.velocity = Vector3.zero;
         m_isCanWalk = false;
-        m_animator.SetFloat("Forward", 0, 0.1f, Time.deltaTime);
+        m_animator.SetFloat("Forward", 0);
         StopAllCoroutines();
         StartCoroutine(coroutine);
     }
@@ -245,10 +247,15 @@ public class Player : MonoBehaviour, IGeneralEvent
         ChangeState(Damage());
     }
 
-    public void HoldCrane(GameObject crane)
+    public void onLift(GameObject crane)
     {
         // モーション
         ChangeState(HoldingCrane(crane));
+    }
+
+    public void onTakeDown()
+    {
+        EndState();
     }
 
     private IEnumerator HoldingCrane(GameObject crane)
@@ -256,6 +263,10 @@ public class Player : MonoBehaviour, IGeneralEvent
         while (true)
         {
             transform.position = crane.transform.position;
+            if (Input.GetButtonDown("Cancel"))
+            {
+                EndState();
+            }
             yield return null;
         }
     }

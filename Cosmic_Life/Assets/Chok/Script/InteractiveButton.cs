@@ -33,7 +33,7 @@ public class InteractiveButton : MonoBehaviour {
                 ExecuteEvents.Execute<IGimmickEvent>(
                     m_gimmick,
                     null,
-                    (receive, y) => receive.onActivate());
+                    (receive, y) => receive.onActivate(null));
 
         }
     }

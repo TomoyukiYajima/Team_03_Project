@@ -8,5 +8,5 @@ public interface IGimmickEvent : IEventSystemHandler
     /// <summary>
     /// 起動するイベント
     /// </summary>
-    void onActivate();
+    void onActivate(GameObject obj);
 }
