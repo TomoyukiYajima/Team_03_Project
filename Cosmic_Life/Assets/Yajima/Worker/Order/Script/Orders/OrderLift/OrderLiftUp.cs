@@ -28,6 +28,6 @@ public class OrderLiftUp : OrderLift {
         }
 
         // 持ち上げるオブジェクトの捜索
-        FindLiftObject(actionObj);
+        FindLiftObject(obj, actionObj);
     }
 }

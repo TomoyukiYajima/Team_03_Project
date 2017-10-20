@@ -58,7 +58,7 @@ public class OrderLift : Order {
         }
 
         // オブジェクトの捜索
-        FindLiftObject(actionObj);
+        FindLiftObject(obj, actionObj);
 
         // リフトクラスを継承した子クラスのオブジェクトチェック関数を呼ぶ
         // m_LiftCheck[checkNumber].CheckObject(obj);
@@ -100,6 +100,12 @@ public class OrderLift : Order {
     // 移動
     protected void Move(float deltaTime, GameObject obj)
     {
+        if(m_LiftObject == null)
+        {
+            ChangeOrder(obj, OrderStatus.NULL);
+            return;
+        }
+
         var dis = m_LiftObject.transform.position - this.transform.position;
         dis.y = 0.0f;
         var direction = Vector3.Normalize(dis);
@@ -134,7 +140,7 @@ public class OrderLift : Order {
     }
 
     // 持ち上げるオブジェクトの捜索
-    protected void FindLiftObject(GameObject actionObj)
+    protected void FindLiftObject(GameObject obj, GameObject actionObj)
     {
         m_IsLift = false;
         m_isRotate = false;
@@ -153,13 +159,16 @@ public class OrderLift : Order {
         if (player != null) playerLength = Vector3.Distance(player.transform.position, this.transform.position);
 
         if (playerLength >= m_ObjectChecker.GetLength())
-
+        {
             // プレイヤーが範囲外の場合、近くに何も持つものがない場合は、返す
-            if (m_ObjectChecker.GetStageObjects().Count == 0 && playerLength >= m_ObjectChecker.GetLength())
+            if (m_ObjectChecker.GetStageObjects().Count == 0)
             {
                 print("持ち上げるものがありません");
+                // 空の状態に遷移
+                ChangeOrder(obj, OrderStatus.NULL);
                 return;
             }
+        }
 
         // プレイヤーを持つオブジェクトに設定
         m_LiftObject = player;
@@ -180,6 +189,12 @@ public class OrderLift : Order {
 
         // ステージオブジェクトがプレイヤーより近い場合は、ステージオブジェクトを持つ
         if (playerLength >= objLength) m_LiftObject = liftStageObj;
+
+        if (m_LiftObject == null)
+        {
+            // 
+            m_LiftObject = liftStageObj;
+        }
     }
 
     // プレイヤーのみを持ち上げる

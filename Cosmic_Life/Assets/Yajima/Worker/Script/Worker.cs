@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public class Worker : MonoBehaviour, IOrderEvent
+public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
 {
 
     //public enum OrderOption {
@@ -111,7 +111,7 @@ public class Worker : MonoBehaviour, IOrderEvent
         if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN, OrderDirection.RIGHT);
 
         //// 持ち上げサンプル
-        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.ATTACK);
+        if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
         if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.THROW);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
         //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.LIFT_UP);
@@ -318,6 +318,11 @@ public class Worker : MonoBehaviour, IOrderEvent
     {
         return m_PrevOrders[number];
     }
+    #endregion
+
+    #region ジェネラルインターフェース
+    // ダメージ処理の呼び出し
+    public void onDamage(int amount) { }
     #endregion
     #endregion
 
