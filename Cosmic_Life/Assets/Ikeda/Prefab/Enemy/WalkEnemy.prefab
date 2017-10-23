@@ -540,7 +540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d40672bc3ad7f0d44a7f344c80c157ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_OrderState: 0
+  m_OrderState: 1
   m_RoundPoints:
   - {fileID: 0}
   - {fileID: 0}
