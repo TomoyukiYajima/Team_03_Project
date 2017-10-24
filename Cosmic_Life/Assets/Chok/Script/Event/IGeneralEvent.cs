@@ -14,7 +14,7 @@ public interface IGeneralEvent : IEventSystemHandler {
 
     //void onThrow();
 
-    //void onLift(GameObject crane);
+    //void onLift(GameObject obj);
 
     //void onTakeDown();
 }

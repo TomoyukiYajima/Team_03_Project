@@ -288,7 +288,7 @@ public class Player : MonoBehaviour, IGeneralEvent
     {
         while (true)
         {
-            transform.position = crane.transform.position;
+            transform.position = crane.transform.position + (transform.FindChild("LiftPoint").transform.position - transform.position) *2;
             if (Input.GetButtonDown("Cancel"))
             {
                 EndState();

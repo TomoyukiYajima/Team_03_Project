@@ -18,7 +18,7 @@ public class ThirdPersonCamera : MonoBehaviour{
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         // コントローラー右スティックで回転
         //var x = Input.GetAxis("HorizontalR") * Time.deltaTime * m_sensitivity;
@@ -39,7 +39,19 @@ public class ThirdPersonCamera : MonoBehaviour{
 
         transform.RotateAround(lookAt, transform.right, y);
 
-        transform.position = lookAt - transform.forward * m_distance;
+        Vector3 dir = lookAt - transform.position;
+        dir.y = 0;
+        dir.Normalize();
+
+        Vector3 target = lookAt - transform.forward * m_distance;
+
+        RaycastHit wallHit = new RaycastHit();
+        if(Physics.Linecast(lookAt, target, out wallHit,1<<8))
+        {
+            target = new Vector3(wallHit.point.x, target.y, wallHit.point.z);
+        }
+
+        transform.position = target;
 
         transform.LookAt(lookAt);
 
@@ -49,5 +61,31 @@ public class ThirdPersonCamera : MonoBehaviour{
 
         //transform.position = m_target.transform.position - transform.forward * 2.0f;
         //transform.Translate(0, 1.0f, 0);
+
+        //Ray ray = new Ray(transform.position, m_target.transform.position - transform.position);
+        //RaycastHit hitInfo;
+
+        //Ray rayBack = new Ray(transform.position, transform.position - m_target.transform.position);
+        //Physics.Raycast(rayBack, out hitInfo, 1.25f);
+        //if (hitInfo.collider == null)
+        //{
+        //    m_distance += 0.1f;
+        //    m_distance = Mathf.Min(m_distance, 1.25f);
+        //}
+
+
+        //Physics.Raycast(ray, out hitInfo, 10.0f);
+
+        //if (hitInfo.collider.tag != "Player")
+        //{
+        //    m_distance -= 0.1f;
+        //}
+
+
+        //if(Physics.Raycast(transform.position,m_target.transform.position - transform.position,out hitInfo, (m_target.transform.position - transform.position).magnitude,LayerMask.NameToLayer("WallLayer")))
+        //{
+        //    transform.position = (hitInfo.point - m_target.transform.position) * 0.8f + m_target.transform.position;
+        //}
     }
+
 }
