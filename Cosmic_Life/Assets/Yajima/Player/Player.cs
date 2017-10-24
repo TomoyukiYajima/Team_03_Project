@@ -87,11 +87,11 @@ public class Player : MonoBehaviour, IGeneralEvent
         Vector3 velocity = Vector3.zero;
 
         //velocity = new Vector3(x, 0, z);
-        if (m_camera != null)
-        {
-            var forward = Vector3.Scale(m_camera.forward, new Vector3(1, 0, 1)).normalized;
-            velocity = transform.forward * v + transform.right * hR;
-        }
+        //if (m_camera != null)
+        //{
+        //var forward = Vector3.Scale(m_camera.forward, new Vector3(1, 0, 1)).normalized;
+        velocity = transform.forward * v + transform.right * hR;
+        //}
 
         if (velocity.magnitude > 1f) velocity.Normalize();
         velocity = transform.InverseTransformDirection(velocity);
@@ -105,25 +105,28 @@ public class Player : MonoBehaviour, IGeneralEvent
         float turnSpeed = Mathf.Lerp(180.0f, 360.0f, velocity.z);
         transform.Rotate(0, m_TurnAmount * turnSpeed * Time.fixedDeltaTime, 0);
 
-        Vector3 ve = (m_animator.deltaPosition * m_Speed) / Time.fixedDeltaTime;
+        //Vector3 ve = (m_animator.deltaPosition * m_Speed) / Time.fixedDeltaTime;
+        Vector3 ve = (transform.forward * v + transform.right * h) *2.5f;
 
         // we preserve the existing y part of the current velocity.
         ve.y = m_rigidbody.velocity.y;
         m_rigidbody.velocity = ve;
 
-        if (m_isGrounded && Time.fixedDeltaTime > 0)
+        if (m_isGrounded)
         {
+            velocity = transform.forward * v + transform.right * h;
+
             m_rigidbody.velocity = new Vector3(m_rigidbody.velocity.x, 0, m_rigidbody.velocity.z);
             m_groundCheckDistance = 0.1f;
             m_isGrounded = false;
 
-            transform.position += transform.right * h * 2.5f * Time.fixedDeltaTime;
+            //transform.position += transform.right * h * m_Speed * 2.5f * Time.fixedDeltaTime;
 
-            if (velocity.z < 0.0f)
-            {
-                this.transform.position += transform.forward * v * m_Speed * 2.5f * Time.fixedDeltaTime;
-            }
-
+            //if (v <= 0.0f)
+            //{
+            //    Vector3 vec = transform.forward * v * m_Speed * 2.5f * Time.fixedDeltaTime;
+            //   m_rigidbody.velocity = new Vector3(0,0,vec.z);
+            //}
         }
         else
         {
@@ -135,9 +138,7 @@ public class Player : MonoBehaviour, IGeneralEvent
 
         }
 
-
-
-        m_animator.SetFloat("Forward", velocity.z, 0.1f, Time.fixedDeltaTime);
+        //m_animator.SetFloat("Forward", velocity.z, 0.1f, Time.fixedDeltaTime);
 
 
     }

@@ -125,6 +125,7 @@ public class SpeechManager : MonoBehaviour
                 if (args.text != order) continue;
                 m_orderDictionary.GetTable().TryGetValue(list.Key, out orderType);
 
+                if (orderType != OrderStatus.LOOK) break;
                 // 方向チェック
                 foreach (var dir in m_directionrDictionary.GetTable())
                 {
