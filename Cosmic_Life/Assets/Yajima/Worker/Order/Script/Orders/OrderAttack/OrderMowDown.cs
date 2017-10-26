@@ -14,7 +14,7 @@ public class OrderMowDown : OrderAttack {
     // Use this for initialization
     public override void Start()
     {
-
+        base.Start();
     }
 
     //// Update is called once per frame
@@ -57,7 +57,7 @@ public class OrderMowDown : OrderAttack {
         m_Collider.SetActive(true);
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         // 持ち上げているオブジェクトの角度を調整する
         //Vector2 forward = new Vector2(obj.transform.forward.x, obj.transform.forward.z);
@@ -80,7 +80,7 @@ public class OrderMowDown : OrderAttack {
 
 
 
-        base.Action(deltaTime, obj);
+        base.UpdateAction(deltaTime, obj);
     }
 
     public override void EndAction(GameObject obj)

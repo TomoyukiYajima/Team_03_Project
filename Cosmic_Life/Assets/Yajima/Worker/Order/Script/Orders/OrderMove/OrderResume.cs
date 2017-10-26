@@ -14,7 +14,7 @@ public class OrderResume : Order {
 
     //}
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("Resume");
     }

@@ -22,7 +22,9 @@ public class OrderMove : DirectionOrder {
     // Use this for initialization
     public override void Start()
     {
-        m_OrderDirection = OrderDirection.FORWARD;
+        base.Start();
+
+        m_Dir = OrderDirection.FORWARD;
     }
 
     //// Update is called once per frame
@@ -42,9 +44,12 @@ public class OrderMove : DirectionOrder {
         base.StartAction(obj, dir);
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("Move");
+
+        // 持っているオブジェクトが、何か(ステージオブジェクト以外)に衝突している場合は返す
+        if (IsLiftHit(obj)) return;
 
         // 回転
         Rotation(deltaTime, obj);
@@ -57,7 +62,7 @@ public class OrderMove : DirectionOrder {
     public override void EndAction(GameObject obj)
     {
         base.EndAction(obj);
-        m_OrderDirection = OrderDirection.FORWARD;
+        m_Dir = OrderDirection.FORWARD;
         m_IsRotation = false;
     }
 
@@ -81,7 +86,7 @@ public class OrderMove : DirectionOrder {
     // 移動方向の設定
     protected override void SetDirection(GameObject obj)
     {
-        switch (m_OrderDirection)
+        switch (m_Dir)
         {
             case OrderDirection.RIGHT: m_Direction = obj.transform.right; break;
             case OrderDirection.LEFT: m_Direction = -obj.transform.right; break;

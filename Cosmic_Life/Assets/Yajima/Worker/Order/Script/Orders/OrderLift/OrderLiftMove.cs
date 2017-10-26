@@ -10,16 +10,16 @@ public class OrderLiftMove : MonoBehaviour {
     // 持ち上げたオブジェクトの初期角度
     private Vector3 m_InitAngle;
 
-    // Use this for initialization
-    void Start () {
-		
-	}
+    //   // Use this for initialization
+    //   void Start () {
 
-    // Update is called once per frame
-    void Update()
-    {
+    //}
 
-    }
+    //   // Update is called once per frame
+    //   void Update()
+    //   {
+
+    //   }
 
     public void CheckLiftObject(GameObject obj)
     {

@@ -22,7 +22,7 @@ public class OrderTurnRight : Order {
 
     //}
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("Turn_Right");
 

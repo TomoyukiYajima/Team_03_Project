@@ -26,16 +26,23 @@ public class OrderTurn : DirectionOrder {
         base.StartAction(obj);
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("Turn");
 
         obj.transform.Rotate(obj.transform.up, m_TurnSpeed * m_Direction * deltaTime);
+
+        //// 持っているオブジェクトが他のオブジェクトと衝突している場合は、停止させる
+        //if (IsLiftHit(obj))
+        //{
+        //    EndOrder(obj);
+        //    return;
+        //}
     }
 
     protected override void SetDirection(GameObject obj)
     {
-        switch (m_OrderDirection)
+        switch (m_Dir)
         {
             case OrderDirection.RIGHT: m_Direction = 1; break;
             case OrderDirection.LEFT: m_Direction = -1; break;

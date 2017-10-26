@@ -58,25 +58,25 @@ MonoBehaviour:
     - Key: move
       Value: 2
     - Key: attack
-      Value: 512
+      Value: 1024
     - Key: turn
       Value: 32
     - Key: stop
-      Value: 65536
+      Value: 131072
     - Key: jump
       Value: 16
     - Key: lift
       Value: 64
     - Key: mow
-      Value: 4096
+      Value: 8192
     - Key: put
-      Value: 128
-    - Key: look
-      Value: 262144
+      Value: 512
     - Key: liftup
       Value: 128
     - Key: throw
       Value: 65536
+    - Key: look
+      Value: 262144
   m_directionrDictionary:
     list:
     - Key: "\u307E\u3048"

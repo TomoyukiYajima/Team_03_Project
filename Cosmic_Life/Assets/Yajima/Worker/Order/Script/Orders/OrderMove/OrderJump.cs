@@ -22,7 +22,7 @@ public class OrderJump : Order {
         obj.GetComponent<Rigidbody>().AddForce(obj.transform.up * 4.0f);
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         //base.Action(deltaTime, obj);
     }

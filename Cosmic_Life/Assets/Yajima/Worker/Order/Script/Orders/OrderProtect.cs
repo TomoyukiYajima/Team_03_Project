@@ -28,7 +28,7 @@ public class OrderProtect : Order {
         m_Barrier.gameObject.SetActive(true);
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("Protect");
     }

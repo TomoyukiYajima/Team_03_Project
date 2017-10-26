@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class DirectionOrder : Order {
 
-    protected OrderDirection m_OrderDirection;
+    //protected OrderDirection m_OrderDirection;
 
     // Use this for initialization
     public override void Start()
     {
-
+        base.Start();
     }
 
     //// Update is called once per frame
@@ -29,14 +29,15 @@ public class DirectionOrder : Order {
     {
         StartAction(obj);
         // 命令方向の変更
-        m_OrderDirection = dir;
+        m_Dir = dir;
+        //m_OrderDirection = dir;
         // 方向の設定
         SetDirection(obj);
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
-        base.Action(deltaTime, obj);
+        base.UpdateAction(deltaTime, obj);
     }
 
     public override void EndAction(GameObject obj)
@@ -51,5 +52,5 @@ public class DirectionOrder : Order {
     }
 
     // 命令方向の取得
-    public OrderDirection GetDirection() { return m_OrderDirection; }
+    public OrderDirection GetDirection() { return m_Dir; } //{ return m_OrderDirection; }
 }

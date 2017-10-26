@@ -5,7 +5,7 @@ using UnityEngine;
 // 命令なしクラス
 public class OrderNull : Order {
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("Null");
     }

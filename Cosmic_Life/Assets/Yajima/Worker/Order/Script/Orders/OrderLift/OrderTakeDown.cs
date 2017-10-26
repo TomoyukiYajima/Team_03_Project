@@ -47,7 +47,7 @@ public class OrderTakeDown : Order {
         stageObj.InitParent();
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("TakeDown");
     }

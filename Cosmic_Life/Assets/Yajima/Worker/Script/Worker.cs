@@ -9,15 +9,15 @@ using UnityEditor;
 
 public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
 {
-
-    //public enum OrderOption {
-    //    NONE        = 1 << 0,
-    //    DIRECTION   = 1 << 1
-    //}
     #region 変数
+    #region シリアライズ変数
     // ワーカーの名前
     [SerializeField]
     private string m_WorkerName = "Undroid";
+    // 命令リストオブジェクト
+    [SerializeField]
+    protected OrderList m_OrderList;
+    //private OrderList m_OrderList = null;
     // 移動速度
     [SerializeField]
     private float m_MoveSpeed = 5.0f;
@@ -30,18 +30,34 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
     // デバックするか
     [SerializeField]
     private bool m_IsDebug = false;
-    // どこを向いているか
-    private GameObject m_LookObject;
+    #endregion
 
+    #region protected変数
+    // 命令実行時間
+    protected float m_StateTimer = 0.0f;
+    // 参照するオブジェクト
+    protected GameObject m_ActionObject;
+    // 剛体
+    protected Rigidbody m_Rigidbody;
+    #endregion
+
+    #region private変数
+    // どこを向いているかを表示するオブジェクト
+    private GameObject m_LookObject;
+    // 方向
+    private OrderDirection m_OrderDir = OrderDirection.FORWARD;
     // 接地しているか
     private bool m_IsGround = false;
     // ジャミングされているか？
     private bool m_IsJamming = false;
+    #endregion
 
+    #region 配列
+    // マネージャ側にやらせる
     // 実行中の命令格納コンテナ
     protected Dictionary<OrderNumber, OrderStatus> m_OrderStatus =
         new Dictionary<OrderNumber, OrderStatus>();
-
+    // ここを変更する
     // 命令リストのリスト1
     private Dictionary<OrderStatus, Order> m_OrdersOne =
         new Dictionary<OrderStatus, Order>();
@@ -52,6 +68,7 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
     //[SerializeField]
     private Dictionary<OrderStatus, Order> m_OrdersThree =
         new Dictionary<OrderStatus, Order>();
+    // ここまで変更する
     // 命令リストのリスト
     private Dictionary<OrderNumber, Dictionary<OrderStatus, Order>> m_Orders =
         new Dictionary<OrderNumber, Dictionary<OrderStatus, Order>>();
@@ -70,18 +87,7 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
         new List<Action<OrderNumber, OrderDirection, GameObject>>();
     //private List<Action<OrderStatus, OrderNumber, int>> m_ChangeOrders =
     //    new List<Action<OrderStatus, OrderNumber, int>>();
-
-    // 命令リストオブジェクト
-    protected OrderList m_OrderList;
-    // 命令実行時間
-    protected float m_StateTimer = 0.0f;
-    // 方向
-    private OrderDirection m_OrderDir = OrderDirection.FORWARD;
-
-    // 参照するオブジェクト
-    protected GameObject m_ActionObject;
-    // 剛体
-    protected Rigidbody m_Rigidbody;
+    #endregion
     #endregion
 
     #region 関数
@@ -111,13 +117,6 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
             m_Orders[m_OrderNumbers[i]][m_OrderStatus[m_OrderNumbers[i]]].Action(time, gameObject);
         }
 
-        //m_Orders[OrderNumber.ONE][m_OrderStatus[OrderNumber.ONE]].Action(time, gameObject);
-        //m_Orders[OrderNumber.TWO][m_OrderStatus[OrderNumber.TWO]].Action(time, gameObject);
-        //m_Orders[OrderNumber.THREE][m_OrderStatus[OrderNumber.THREE]].Action(time, gameObject);
-
-        // 命令が終了していれば、NULLの状態に変更する
-        //if (m_Orders[m_OrderState].IsEndOrder()) ChangeOrder(OrderStatus.NULL);
-
         // 命令(仮)　音声認識でプレイヤーから命令してもらう
         if (m_IsDebug)
         {
@@ -125,8 +124,8 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
             if (PlayerInputManager.GetInputDown(InputState.INPUT_OK)) ChangeOrder(OrderStatus.MOVE);
             if (PlayerInputManager.GetInputDown(InputState.INPUT_CANCEL)) ChangeOrder(OrderStatus.ALLSTOP);
 
-            if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.LOOK, OrderDirection.UP);
-            if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.LOOK, OrderDirection.DOWN);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN, OrderDirection.LEFT);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN, OrderDirection.RIGHT);
             //if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_LEFT)) ChangeOrder(OrderStatus.TURN, OrderDirection.LEFT);
             //if (PlayerInputManager.GetInputDown(InputState.INPUT_TRIGGER_RIGHT)) ChangeOrder(OrderStatus.TURN, OrderDirection.RIGHT);
 
@@ -175,20 +174,30 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
     protected virtual void SetOrder()
     {
         // 命令リストの取得
-        m_OrderList = this.transform.Find("OrderList").GetComponent<OrderList>();
+        if (m_OrderList = null) m_OrderList = this.transform.Find("OrderList").GetComponent<OrderList>();
         m_OrderList.InitializeOrder();
 
-        m_OrderNumbers.Add(OrderNumber.ONE);
-        m_OrderNumbers.Add(OrderNumber.TWO);
-        m_OrderNumbers.Add(OrderNumber.THREE);
+        // m_OrderNumbers[i]
+        for(int i = 0; i != m_OrderNumbers.Count; ++i)
+        {
+            m_OrderNumbers.Add(m_OrderNumbers[i]);
+            // 命令の追加
+            //m_Orders.Add(m_OrderNumbers[i], m_OrdersOne);
+            // 命令状態の追加
+            m_OrderStatus.Add(m_OrderNumbers[i], OrderStatus.NULL);
+        }
+
+        //m_OrderNumbers.Add(OrderNumber.ONE);
+        //m_OrderNumbers.Add(OrderNumber.TWO);
+        //m_OrderNumbers.Add(OrderNumber.THREE);
         // 命令の追加
         m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
         m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
         m_Orders.Add(OrderNumber.THREE, m_OrdersThree);
         // 命令状態の追加
-        m_OrderStatus.Add(OrderNumber.ONE, OrderStatus.NULL);
-        m_OrderStatus.Add(OrderNumber.TWO, OrderStatus.NULL);
-        m_OrderStatus.Add(OrderNumber.THREE, OrderStatus.NULL);
+        //m_OrderStatus.Add(OrderNumber.ONE, OrderStatus.NULL);
+        //m_OrderStatus.Add(OrderNumber.TWO, OrderStatus.NULL);
+        //m_OrderStatus.Add(OrderNumber.THREE, OrderStatus.NULL);
 
         // 命令の追加
         for (int i = 0; i != m_OrderNumbers.Count; ++i)

@@ -37,8 +37,13 @@ public class OrderAttack : Order {
     // Use this for initialization
     public override void Start()
     {
-        m_Collider.transform.position = m_StartPoint.position;
-        m_MoveObject = m_Collider;
+        base.Start();
+
+        if (m_Collider != null)
+        {
+            m_Collider.transform.position = m_StartPoint.position;
+            m_MoveObject = m_Collider;
+        }
     }
 
     //// Update is called once per frame
@@ -57,7 +62,7 @@ public class OrderAttack : Order {
         m_IsEndOrder = false;
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print(m_OrderText);
 

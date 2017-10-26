@@ -1,9 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Order : MonoBehaviour {
+
+    enum ActionNumber
+    {
+        DEFAULT          = 1 << 0,
+        OBJECT_ACTION   = 1 << 1
+    }
 
     // 命令が終了したか
     protected bool m_IsEndOrder = false;
@@ -18,12 +25,21 @@ public class Order : MonoBehaviour {
 
     // 参照するオブジェクト
     protected GameObject m_ActionObject;
-
+    // 実行するアクションの状態
+    private ActionNumber m_ActionNumber = ActionNumber.DEFAULT;
     // 方向
     protected OrderDirection m_Dir = OrderDirection.FORWARD;
 
+    // Action実行配列
+    private Dictionary<ActionNumber, Action<float, GameObject, GameObject>> m_Actions =
+        new Dictionary<ActionNumber, Action<float, GameObject, GameObject>>();
+
     // Use this for initialization
-    public virtual void Start() { }
+    public virtual void Start()
+    {
+        m_Actions[ActionNumber.DEFAULT] = (deltaTime, obj, actionObj) => { UpdateAction(deltaTime, obj); };
+        m_Actions[ActionNumber.OBJECT_ACTION] = (deltaTime, obj, actionObj) => { UpdateAction(deltaTime, obj, actionObj); };
+    }
 
     // Update is called once per frame
     public virtual void Update() { }
@@ -33,15 +49,25 @@ public class Order : MonoBehaviour {
     {
         m_ActionObject = actionObj;
         m_Dir = obj.GetComponent<Worker>().GetOrderDir();
+
+        if (m_ActionObject != null) m_ActionNumber = ActionNumber.OBJECT_ACTION;
     }
 
     // 行動
-    public virtual void Action(float deltaTime, GameObject obj) { }
+    public void Action(float deltaTime, GameObject obj) {
+        m_Actions[m_ActionNumber](deltaTime, obj, m_ActionObject);
+    }
+
+    // 更新行動
+    protected virtual void UpdateAction(float deltaTime, GameObject obj) { }
+    // 更新行動(オブジェクト指定)
+    protected virtual void UpdateAction(float deltaTime, GameObject obj, GameObject actionObj) { }
 
     // 行動終了
     public virtual void EndAction(GameObject obj)
     {
         m_IsEndOrder = false;
+        m_ActionNumber = ActionNumber.DEFAULT;
         // 命令終了時に新しい命令を実行する場合
         //if (m_IsEndPlayOrder) ChangeOrder(obj, m_EndPlayOrder);
         //m_IsEndPlayOrder = false;
@@ -95,5 +121,19 @@ public class Order : MonoBehaviour {
             obj,
             null,
             (e, d) => { e.endOrder(m_OrderNumber); });
+    }
+
+    // 持っているオブジェクトが他のオブジェクトを衝突しているか
+    protected bool IsLiftHit(GameObject obj)
+    {
+
+        Transform lift = obj.transform.Find("LiftObject");
+        if (lift.childCount == 0) return false;
+
+        Transform child = lift.GetChild(0);
+        StageObject liftObj = child.GetComponent<StageObject>();
+        if (liftObj == null) return false;
+
+        return liftObj.IsHit();
     }
 }

@@ -35,10 +35,10 @@ public class OrderLift : Order {
         new Dictionary<LiftObjectNumber, Action<int>>();
 
     // Use this for initialization
-    public override void Start()
-    {
-        //m_LiftMoves.Add(LiftObjectNumber.PLAYER_LIFT_NUMBER, (value) => { });
-    }
+    //public override void Start()
+    //{
+    //    //m_LiftMoves.Add(LiftObjectNumber.PLAYER_LIFT_NUMBER, (value) => { });
+    //}
 
     //// Update is called once per frame
     //void Update () {
@@ -66,7 +66,7 @@ public class OrderLift : Order {
         // プレイヤーを持つ状態に変更する
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
         print("Lift");
 
@@ -138,6 +138,8 @@ public class OrderLift : Order {
         body.isKinematic = true;
         // 重力をオフにする
         body.useGravity = false;
+        // 固定しているステータスを解除
+        body.constraints = RigidbodyConstraints.None;
         m_IsLift = true;
     }
 

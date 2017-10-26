@@ -31,9 +31,9 @@ public class OrderEnemyMove : Order {
         m_Enemy = GetEnemy(obj);
     }
 
-    public override void Action(float deltaTime, GameObject obj)
+    protected override void UpdateAction(float deltaTime, GameObject obj)
     {
-        base.Action(deltaTime, obj);
+        base.UpdateAction(deltaTime, obj);
 
         if(m_Enemy == null)
         {
