@@ -21,7 +21,7 @@ public class GimmickLift : GimmickBase {
 		
 	}
 
-    public override void onActivate(GameObject obj)
+    public override void onActivate()
     {
         if (m_isActivated) return;
         m_isActivated = true;

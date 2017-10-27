@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class InteractiveButton : MonoBehaviour {
+public class InteractiveButton : MonoBehaviour
+{
 
     [SerializeField] private int m_interactiveAngle;
     [SerializeField] private GameObject m_gimmick;
@@ -33,9 +34,8 @@ public class InteractiveButton : MonoBehaviour {
                 ExecuteEvents.Execute<IGimmickEvent>(
                     m_gimmick,
                     null,
-                    (receive, y) => receive.onActivate(null));
-
+                    (receive, y) => receive.onActivate());
+            }
         }
-    }
     }
 }

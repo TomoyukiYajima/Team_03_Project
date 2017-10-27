@@ -9,4 +9,7 @@ public interface IGimmickEvent : IEventSystemHandler
     /// 起動するイベント
     /// </summary>
     void onActivate(GameObject obj);
+
+    void onActivate(string password);
+    void onActivate();
 }

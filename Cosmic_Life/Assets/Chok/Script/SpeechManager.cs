@@ -45,6 +45,8 @@ public class SpeechManager : MonoBehaviour
     private Dictionary<string,List<string>> m_orderKeyword = new Dictionary<string, List<string>>();
     private List<string> m_unlockKeyword = new List<string>();
 
+    private GameObject m_robot;
+
     //#if !UNITY_EDITOR
     void Start()
     {
@@ -101,6 +103,8 @@ public class SpeechManager : MonoBehaviour
         m_unlockRecognizer.OnPhraseRecognized += OnUnlockPhrase;
         m_unlockRecognizer.Start();
         Debug.Log("キーワード読み取り完了");
+
+        m_robot = GameObject.FindGameObjectWithTag("Robot");
     }
 
     // キーワードを読み取ったら実行するメソッド
@@ -156,6 +160,8 @@ public class SpeechManager : MonoBehaviour
             if (args.text != phrase) continue;
             break;
         }
+
+        UnlockDoor(args.text);
     }
 
     private void SendOrder(OrderStatus order, OrderDirection dir)
@@ -165,14 +171,14 @@ public class SpeechManager : MonoBehaviour
         //workerList.AddRange(GameObject.FindGameObjectsWithTag("Robot"));
         //workerList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
 
-        // シーンにいる全部のロボットを入れる
-        var robotList = GameObject.FindGameObjectsWithTag("Robot");
+        //// シーンにいる全部のロボットを入れる
+        //var robotList = GameObject.FindGameObjectsWithTag("Robot");
 
-        // 全部のロボットにオーダーを出す
-        foreach (var robot in robotList)
-        {
+        //// 全部のロボットにオーダーを出す
+        //foreach (var robot in robotList)
+        //{
             // IRobotEventが実装されていなければreturn
-            if (!ExecuteEvents.CanHandleEvent<IOrderEvent>(robot))
+            if (!ExecuteEvents.CanHandleEvent<IOrderEvent>(m_robot))
             {
                 Debug.Log("IOrderEvent未実装");
                 return;
@@ -181,18 +187,18 @@ public class SpeechManager : MonoBehaviour
             if (dir == OrderDirection.NULL)
             {
                 ExecuteEvents.Execute<IOrderEvent>(
-                    robot,
+                    m_robot,
                     null,
                     (receive, y) => receive.onOrder(order));
             }
             else
             {
                 ExecuteEvents.Execute<IOrderEvent>(
-                    robot,
+                    m_robot,
                     null,
                     (receive, y) => receive.onOrder(order, dir));
             }
-        }
+        //}
 
         var enemyList = GameObject.FindGameObjectsWithTag("Enemy");
 
@@ -210,6 +216,11 @@ public class SpeechManager : MonoBehaviour
                 null,
                 (receive, y) => receive.onHear());
         }
+    }
+
+    private void UnlockDoor(String password)
+    {
+
     }
 
 

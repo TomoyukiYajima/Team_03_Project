@@ -21,5 +21,11 @@ public class GimmickBase : MonoBehaviour,IGimmickEvent {
     {
     }
 
+    public virtual void onActivate(string password)
+    {
+    }
 
+    public virtual void onActivate()
+    {
+    }
 }
