@@ -30,6 +30,9 @@ public class OrderTurn : DirectionOrder {
     {
         print("Turn");
 
+        // 持っているオブジェクトが、何か(ステージオブジェクト以外)に衝突している場合は返す
+        if (IsLiftHit(obj)) return;
+
         obj.transform.Rotate(obj.transform.up, m_TurnSpeed * m_Direction * deltaTime);
 
         //// 持っているオブジェクトが他のオブジェクトと衝突している場合は、停止させる
@@ -38,6 +41,13 @@ public class OrderTurn : DirectionOrder {
         //    EndOrder(obj);
         //    return;
         //}
+    }
+
+    public override void EndAction(GameObject obj)
+    {
+        base.EndAction(obj);
+
+        ObjectClear(obj);
     }
 
     protected override void SetDirection(GameObject obj)

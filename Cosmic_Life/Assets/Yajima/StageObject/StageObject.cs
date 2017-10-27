@@ -29,6 +29,8 @@ public class StageObject : MonoBehaviour
     private bool m_IsStageObjectHit = false;
     // 衝突しているオブジェクト
     private List<GameObject> m_HitObjects = new List<GameObject>();
+    // 衝突していたオブジェクト
+    //private List<GameObject> m_PrevHitObjects = new List<GameObject>();
 
     // 点滅するか
     private bool m_IsFlash = false;
@@ -47,6 +49,7 @@ public class StageObject : MonoBehaviour
 
         // モデルなしバージョン
         m_Materials = this.GetComponent<MeshRenderer>().materials;
+        // モデルありバージョン
         //for(int i = 0; i != m_Materials.Length; ++i)
         //{
         //    m_Colors[i] = m_Materials[i].color;
@@ -73,6 +76,8 @@ public class StageObject : MonoBehaviour
         m_PravRotate = this.transform.rotation;
         m_PravVelocity = m_Rigidbody.velocity;
 
+        if (this.transform.parent == null) return;
+        // アンドロイドがオブジェクトを持っていない場合
         if(this.transform.parent.name != "LiftObject")
         {
             if (m_Rigidbody.velocity.x == 0.0f && m_Rigidbody.velocity.z == 0.0f && m_IsStageObjectHit == false)
@@ -81,6 +86,10 @@ public class StageObject : MonoBehaviour
                 m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
             }
         }
+
+        //if (m_PrevHitObjects.Count == 0) return;
+
+        //ReleasObject();
     }
 
     // 自己発光の設定を行います
@@ -136,18 +145,46 @@ public class StageObject : MonoBehaviour
             m_Materials[i].DOColor(new Color(0.0f, 0.0f, 0.0f), "_EmissionColor", time);
             //m_Materials[i].DisableKeyword("_EMISSION");
         }
+    }
 
-        yield return new WaitForSeconds(time);
+    // 参照しているオブジェクトの解放
+    private IEnumerator ReleasObject(GameObject obj)
+    {
+        yield return new WaitForSeconds(Time.deltaTime);
 
-        // 再度点滅する場合
-        if (m_IsFlash) StartCoroutine(Flash(color, time));
-        else
-        {
-            for (int i = 0; i != m_Materials.Length; ++i)
-            {
-                m_Materials[i].DisableKeyword("_EMISSION");
-            }
-        }
+        m_HitObjects.Remove(obj);
+        //// 削除するオブジェクトを捜して削除する
+        //for (int i = 0; i != m_PrevHitObjects.Count; ++i)
+        //{
+        //    GameObject obj = m_PrevHitObjects[i];
+        //    for (int j = 0; j != m_HitObjects.Count; ++i)
+        //    {
+        //        if (obj != m_HitObjects[j]) continue;
+        //        // 同一のオブジェクト
+        //        m_HitObjects.Remove(obj);
+        //        m_PrevHitObjects.Remove(obj);
+        //        // 削除するオブジェクトがない場合はbreakする
+        //        if (m_PrevHitObjects.Count == 0)
+        //            break;
+        //    }
+        //    if (m_PrevHitObjects.Count == 0)
+        //        break;
+        //}
+    }
+
+    private void AddObject(GameObject obj)
+    {
+        //yield return new WaitForSeconds(Time.deltaTime);
+
+        // if (m_HitObjects.IndexOf(obj) != -1) return;
+        if (m_HitObjects.IndexOf(obj) < 0) m_HitObjects.Add(obj);
+    }
+
+    // 参照しているオブジェクトのクリア
+    public void ClearObject()
+    {
+        //m_HitObjects.Clear();
+        //m_PrevHitObjects.Clear();
     }
 
     // Emissionの点滅を終了させます
@@ -191,10 +228,11 @@ public class StageObject : MonoBehaviour
             m_Rigidbody.constraints = RigidbodyConstraints.None;
             m_IsStageObjectHit = true;
         }
-        else if (collision.transform.tag == "Sample")
-        {
-            m_HitObjects.Add(collision.gameObject);
-        }
+        //else if (collision.transform.tag == "Sample")
+        //{
+        //    AddObject(collision.gameObject);
+        //    print("Hit");
+        //}
     }
 
     public void OnCollisionStay(Collision collision)
@@ -225,10 +263,11 @@ public class StageObject : MonoBehaviour
         {
             m_IsStageObjectHit = false;
         }
-        else if (collision.transform.tag == "Sample")
-        {
-            m_HitObjects.Remove(collision.gameObject);
-        }
+        //else if (collision.transform.tag == "Sample")
+        //{
+        //    ReleasObject(collision.gameObject);
+        //    //m_PrevHitObjects.Add(collision.gameObject);
+        //}
         //if (collision.transform.tag == "Player") m_Rigidbody.isKinematic = false;
     }
     #endregion

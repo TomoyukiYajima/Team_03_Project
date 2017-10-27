@@ -132,7 +132,7 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
             //// 持ち上げサンプル
             //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LOOK, OrderDirection.UP);
             if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.LIFT);
-            if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.THROW);
+            if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.LIFT_UP);
             //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.LIFT_UP);
             //if (PlayerInputManager.GetInputDown(InputState.INPUT_Y)) ChangeOrder(OrderStatus.ATTACK_MOW_DOWN);
             //if (PlayerInputManager.GetInputDown(InputState.INPUT_X)) ChangeOrder(OrderStatus.PULL_OUT);
@@ -174,22 +174,22 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
     protected virtual void SetOrder()
     {
         // 命令リストの取得
-        if (m_OrderList = null) m_OrderList = this.transform.Find("OrderList").GetComponent<OrderList>();
+        if (m_OrderList == null) m_OrderList = this.transform.Find("OrderList").GetComponent<OrderList>();
         m_OrderList.InitializeOrder();
 
         // m_OrderNumbers[i]
-        for(int i = 0; i != m_OrderNumbers.Count; ++i)
-        {
-            m_OrderNumbers.Add(m_OrderNumbers[i]);
+        m_OrderNumbers.Add(OrderNumber.ONE);
+        m_OrderNumbers.Add(OrderNumber.TWO);
+        m_OrderNumbers.Add(OrderNumber.THREE);
+
+        for (int i = 0; i != m_OrderNumbers.Count; ++i)
+        {;
             // 命令の追加
             //m_Orders.Add(m_OrderNumbers[i], m_OrdersOne);
             // 命令状態の追加
             m_OrderStatus.Add(m_OrderNumbers[i], OrderStatus.NULL);
         }
 
-        //m_OrderNumbers.Add(OrderNumber.ONE);
-        //m_OrderNumbers.Add(OrderNumber.TWO);
-        //m_OrderNumbers.Add(OrderNumber.THREE);
         // 命令の追加
         m_Orders.Add(OrderNumber.ONE, m_OrdersOne);
         m_Orders.Add(OrderNumber.TWO, m_OrdersTwo);
@@ -359,6 +359,13 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
     #region ジェネラルインターフェース
     // ダメージ処理の呼び出し
     public void onDamage(int amount) { }
+    //public void onShock() { }
+
+    //public void onThrow() { }
+
+    //public void onLift(GameObject obj) { }
+
+    //public void onTakeDown() { }
     #endregion
     #endregion
 

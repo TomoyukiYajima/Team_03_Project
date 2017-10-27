@@ -62,6 +62,7 @@ public class OrderMove : DirectionOrder {
     public override void EndAction(GameObject obj)
     {
         base.EndAction(obj);
+        ObjectClear(obj);
         m_Dir = OrderDirection.FORWARD;
         m_IsRotation = false;
     }

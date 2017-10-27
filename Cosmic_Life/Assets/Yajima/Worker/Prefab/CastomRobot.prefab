@@ -1380,7 +1380,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1314680104968646}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1.616, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4764746864043056}
@@ -1445,8 +1445,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1985220034696986}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0.13, y: 1, z: -0.14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4597825884174422}
@@ -1460,7 +1460,7 @@ Transform:
   - {fileID: 4905508300347762}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4427275797231196
 Transform:
   m_ObjectHideFlags: 1
@@ -2781,7 +2781,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_OrderOneStatus: 010000000200000004000000080000001000000020000000400000008000000000010000000200000040000000800000000001000000020000000400
   m_OrderTwoStatus: 010000000400000010000000
-  m_OrderThreeStatus: 010000000400000000020000000400000008000000100000
+  m_OrderThreeStatus: 010000000400000000040000000800000010000000200000
   m_OrdersOne:
   - {fileID: 114048694224861526}
   - {fileID: 114502538523700266}
@@ -2849,10 +2849,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_WorkerName: Worker
+  m_OrderList: {fileID: 0}
   m_MoveSpeed: 5
   m_RotateSpeed: 30
   m_ThrowPowor: 10
-  m_IsDebug: 1
+  m_IsDebug: 0
 --- !u!114 &114456845448272570
 MonoBehaviour:
   m_ObjectHideFlags: 1

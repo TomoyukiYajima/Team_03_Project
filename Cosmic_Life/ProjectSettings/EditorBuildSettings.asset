@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Yajima/Input/InputSample.unity
     guid: 7722f4af4244b1441a0410788b67e3bd
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Stages/SampleStage.unity
     guid: 73d52b8c76b574748a9a44c45ceb54bd
+  - enabled: 1
+    path: Assets/Scenes/SampleStage2/StageSample2.unity
+    guid: 398f3b20d80e5ce45b858db3d6a56a18
