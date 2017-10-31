@@ -146,9 +146,18 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
 
         }
 
-        if (m_OrderDir == OrderDirection.UP) m_LookObject.transform.localPosition = Vector3.up;
-        else if (m_OrderDir == OrderDirection.DOWN) m_LookObject.transform.localPosition = Vector3.down;
-        else if (m_OrderDir == OrderDirection.FORWARD) m_LookObject.transform.localPosition = Vector3.zero;
+
+        switch(m_OrderDir){
+            case OrderDirection.UP: m_LookObject.transform.localPosition = Vector3.up; break;
+            case OrderDirection.DOWN: m_LookObject.transform.localPosition = Vector3.down; break;
+            case OrderDirection.FORWARD: m_LookObject.transform.localPosition = Vector3.zero; break;
+            case OrderDirection.BACKWARD: m_LookObject.transform.localPosition = -Vector3.forward; break;
+            case OrderDirection.LEFT: m_LookObject.transform.localPosition = Vector3.left; break;
+            case OrderDirection.RIGHT: m_LookObject.transform.localPosition = Vector3.right; break;
+        }
+        //if (m_OrderDir == OrderDirection.UP) m_LookObject.transform.localPosition = Vector3.up;
+        //else if (m_OrderDir == OrderDirection.DOWN) m_LookObject.transform.localPosition = Vector3.down;
+        //else if (m_OrderDir == OrderDirection.FORWARD) m_LookObject.transform.localPosition = Vector3.zero;
         //print(m_OrderDir.ToString());
 
         m_StateTimer += time;
@@ -359,13 +368,14 @@ public class Worker : MonoBehaviour, IOrderEvent, IGeneralEvent
     #region ジェネラルインターフェース
     // ダメージ処理の呼び出し
     public void onDamage(int amount) { }
-    //public void onShock() { }
 
-    //public void onThrow() { }
+    public void onShock() { }
 
-    //public void onLift(GameObject obj) { }
+    public void onThrow() { }
 
-    //public void onTakeDown() { }
+    public void onLift(GameObject obj) { }
+
+    public void onTakeDown() { }
     #endregion
     #endregion
 

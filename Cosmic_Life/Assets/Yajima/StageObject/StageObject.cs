@@ -145,6 +145,11 @@ public class StageObject : MonoBehaviour
             m_Materials[i].DOColor(new Color(0.0f, 0.0f, 0.0f), "_EmissionColor", time);
             //m_Materials[i].DisableKeyword("_EMISSION");
         }
+
+        // 再帰呼び出し
+        if (!m_IsFlash) yield break;
+        yield return new WaitForSeconds(time);
+        StartCoroutine(Flash(color, time));
     }
 
     // 参照しているオブジェクトの解放
