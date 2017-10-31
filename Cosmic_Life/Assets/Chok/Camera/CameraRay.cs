@@ -28,8 +28,8 @@ public class CameraRay : MonoBehaviour
     void Update()
     {
         var dir = (transform.position - m_player.position).normalized;
-        float angle = Vector3.Angle(m_player.forward,dir);
-        
+        float angle = Vector3.Angle(m_player.forward, dir);
+
         // プレイヤー視野角度内かつプレイヤーの後ろにいるときしか更新しない
         if (angle > m_rayAngle)
         {
@@ -60,7 +60,7 @@ public class CameraRay : MonoBehaviour
         else if (m_colliderObj != hitInfo.collider.gameObject)
         {
             EndFlash(hitInfo.collider.gameObject);
-            StartFlash(new Color(0.5f, 0.5f, 0.5f), 1.0f);
+            //StartFlash(new Color(0.5f, 0.5f, 0.5f), 1.0f);
         }
 
         /*
@@ -81,11 +81,10 @@ public class CameraRay : MonoBehaviour
     {
         // オブジェクトがStageObjectコンポーネントを実装しているかをチェック
         StageObject material = null;
-        if ((material = m_colliderObj.GetComponent<StageObject>()) != null)
-        {
-            // 点滅開始
-            material.FlashEmission(color, duration);
-        }
+        //StageObject material = m_colliderObj.GetComponent<StageObject>();
+        if ((material = m_colliderObj.GetComponent<StageObject>()) == null) return;
+        // 点滅開始
+        material.FlashEmission(color, duration);
     }
 
     private void EndFlash(GameObject obj)
@@ -100,11 +99,13 @@ public class CameraRay : MonoBehaviour
                 // 点滅終了
                 material.EndFlashEmission();
             }
-            // 格納オブジェクトを更新
-            m_colliderObj = obj;
-            // 更新されたオブジェクトをロボットに送る
-            SendObject(m_colliderObj);
         }
+        // 格納オブジェクトを更新
+        m_colliderObj = obj;
+        // 更新されたオブジェクトをロボットに送る
+        SendObject(m_colliderObj);
+        if (m_colliderObj == null) return;
+        StartFlash(new Color(0.5f, 0.5f, 0.5f), 1.0f);
     }
 
     private void SendObject(GameObject obj)

@@ -220,6 +220,22 @@ public class SpeechManager : MonoBehaviour
 
     private void UnlockDoor(String password)
     {
+        var doorList = GameObject.FindGameObjectsWithTag("LockedDoor");
+
+        foreach (var door in doorList)
+        {
+            // IRobotEventが実装されていなければreturn
+            if (!ExecuteEvents.CanHandleEvent<IGimmickEvent>(door))
+            {
+                Debug.Log("IEnemyEvent未実装");
+                return;
+            }
+
+            ExecuteEvents.Execute<IGimmickEvent>(
+                door,
+                null,
+                (receive, y) => receive.onActivate(password));
+        }
 
     }
 
