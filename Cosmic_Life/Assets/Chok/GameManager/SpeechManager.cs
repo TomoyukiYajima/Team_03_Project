@@ -220,6 +220,7 @@ public class SpeechManager : SingletonBehaviour<SpeechManager>
 
     private void UnlockDoor(String password)
     {
+<<<<<<< HEAD:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
 <<<<<<< HEAD:Cosmic_Life/Assets/Chok/Script/SpeechManager.cs
         var enemyList = GameObject.FindGameObjectsWithTag("Enemy");
 
@@ -228,12 +229,17 @@ public class SpeechManager : SingletonBehaviour<SpeechManager>
             // IRobotEventが実装されていなければreturn
             if (!ExecuteEvents.CanHandleEvent<IGimmickEvent>(enemy))
 =======
+=======
+>>>>>>> 906c554784ea9c03c80f45901faa28bfc10c8e04:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
         var doorList = GameObject.FindGameObjectsWithTag("LockedDoor");
 
         foreach (var door in doorList)
         {
             // IRobotEventが実装されていなければreturn
             if (!ExecuteEvents.CanHandleEvent<IGimmickEvent>(door))
+<<<<<<< HEAD:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
+>>>>>>> 906c554784ea9c03c80f45901faa28bfc10c8e04:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
+=======
 >>>>>>> 906c554784ea9c03c80f45901faa28bfc10c8e04:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
             {
                 Debug.Log("IEnemyEvent未実装");
@@ -241,8 +247,12 @@ public class SpeechManager : SingletonBehaviour<SpeechManager>
             }
 
             ExecuteEvents.Execute<IGimmickEvent>(
+<<<<<<< HEAD:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
 <<<<<<< HEAD:Cosmic_Life/Assets/Chok/Script/SpeechManager.cs
                 enemy,
+=======
+                door,
+>>>>>>> 906c554784ea9c03c80f45901faa28bfc10c8e04:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
 =======
                 door,
 >>>>>>> 906c554784ea9c03c80f45901faa28bfc10c8e04:Cosmic_Life/Assets/Chok/GameManager/SpeechManager.cs
