@@ -136,4 +136,17 @@ public class Order : MonoBehaviour {
 
         return liftObj.IsHit();
     }
+
+    // オブジェクトクリア
+    protected void ObjectClear(GameObject obj)
+    {
+        Transform lift = obj.transform.Find("LiftObject");
+        if (lift.childCount == 0) return;
+
+        Transform child = lift.GetChild(0);
+        StageObject liftObj = child.GetComponent<StageObject>();
+        if (liftObj == null) return;
+
+        liftObj.ClearObject();
+    }
 }

@@ -138,7 +138,7 @@ public class Player : MonoBehaviour, IGeneralEvent
 
         }
 
-        //m_animator.SetFloat("Forward", velocity.z, 0.1f, Time.fixedDeltaTime);
+       m_animator.SetFloat("Forward", m_rigidbody.velocity.magnitude, 0.1f, Time.fixedDeltaTime);
 
 
     }

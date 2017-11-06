@@ -22,7 +22,6 @@ public class PatrolState : EnemyState
         //プレイヤーが見えた場合
         if (enemy.GetComponent<WalkEnemy>().CanSeePlayer())
         {
-            enemy.GetComponent<WalkEnemy>().SetViewAngle(180.0f);
             enemy.ChangeState(EnemyStatus.Chasing); 
             //obj.GetComponent<WalkEnemy>().m_Agent.destination = obj.GetPlayer().transform.position;
         }

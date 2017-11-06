@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Chasing : EnemyState {
 
+    //攻撃を当てる距離の設定
+    [SerializeField]
+    private float m_StopDistance;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -17,17 +21,20 @@ public class Chasing : EnemyState {
     public override void Action(float deltaTime, Enemy enemy)
     {
         print("追跡中");
+        WalkEnemy l_WalkEnemy = enemy.GetComponent<WalkEnemy>();
 
         //プレイヤーが見えている場合
-        if (enemy.GetComponent<WalkEnemy>().CanSeePlayer())
+        if (l_WalkEnemy.CanSeePlayer())
         {
             //プレイヤーの場所へ向かう
-            enemy.GetComponent<WalkEnemy>().m_Agent.destination = enemy.GetPlayer().transform.position - transform.forward * 1.3f;
+            l_WalkEnemy.m_Agent.destination = l_WalkEnemy.GetPlayer().transform.position;
+            //プレイヤーとの距離
+            float distance = Vector3.Distance(l_WalkEnemy.GetEnemyPosition(), l_WalkEnemy.GetPlayer().transform.position);
 
-            float distance = Vector3.Distance(transform.position, enemy.GetPlayer().transform.position);
-
-            if (distance <= 1.5f)
+            //プレイヤーとの距離を調べて、近ければ攻撃状態へ
+            if (distance < m_StopDistance)
             {
+                l_WalkEnemy.AgentStop();
                 enemy.ChangeState(EnemyStatus.Attack);
             }
         }

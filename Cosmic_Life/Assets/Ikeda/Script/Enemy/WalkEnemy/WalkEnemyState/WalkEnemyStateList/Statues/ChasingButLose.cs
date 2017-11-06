@@ -14,24 +14,32 @@ public class ChasingButLose : EnemyState {
 		
 	}
 
-    public override void Action(float deltaTime, Enemy obj)
+    public override void Action(float deltaTime, Enemy enemy)
     {
         print("追跡中(見失い中)");
 
         //プレイヤーが見えた場合
-        if (obj.GetComponent<WalkEnemy>().CanSeePlayer())
+        if (enemy.GetComponent<WalkEnemy>().CanSeePlayer())
         {
+            enemy.GetComponent<WalkEnemy>().m_Agent.destination = enemy.GetPlayer().transform.position;
             //追跡中に状態変更
-            obj.ChangeState(EnemyStatus.Chasing);
-            obj.GetComponent<WalkEnemy>().m_Agent.destination = obj.GetPlayer().transform.position;
+            enemy.ChangeState(EnemyStatus.Chasing);
         }
         //プレイヤーを見つけられないまま目的地に到着
-        else if (obj.GetComponent<WalkEnemy>().HasArrived())
+        else if (enemy.GetComponent<WalkEnemy>().HasArrived())
         {
-            //巡回中に状態遷移
-            obj.ChangeState(EnemyStatus.RoundState);
+            if (enemy.GetComponent<WalkEnemy>().GetIsPatrol())
+            {
+                //巡回中に状態遷移
+                enemy.ChangeState(EnemyStatus.RoundState);
+
+            }
+            else {
+                //元の位置に戻る状態
+                enemy.ChangeState(EnemyStatus.ReturnPosition);
+
+            }
         }
 
     }
-
 }

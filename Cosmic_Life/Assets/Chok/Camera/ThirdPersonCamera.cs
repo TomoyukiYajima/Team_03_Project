@@ -46,7 +46,7 @@ public class ThirdPersonCamera : MonoBehaviour{
         Vector3 target = lookAt - transform.forward * m_distance;
 
         RaycastHit wallHit = new RaycastHit();
-        if(Physics.Linecast(lookAt, target, out wallHit,1<<8))
+        if(Physics.Linecast(lookAt, target, out wallHit,1 << 8))
         {
             target = new Vector3(wallHit.point.x, target.y, wallHit.point.z);
         }

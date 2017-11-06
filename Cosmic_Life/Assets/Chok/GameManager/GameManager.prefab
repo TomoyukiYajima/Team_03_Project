@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4832164032152064}
   - component: {fileID: 114364752067130380}
   - component: {fileID: 114235569025885534}
+  - component: {fileID: 114636115768719956}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -140,6 +141,57 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114636115768719956
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1099897013208310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3cd2609c28b78d47a502404fe9e6603, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_path: Assets/Resources/
+  m_unlockFile: unlock
+  m_orderDictionary:
+    list:
+    - Key: move
+      Value: 2
+    - Key: attack
+      Value: 1024
+    - Key: turn
+      Value: 32
+    - Key: stop
+      Value: 131072
+    - Key: jump
+      Value: 16
+    - Key: lift
+      Value: 64
+    - Key: mow
+      Value: 8192
+    - Key: put
+      Value: 512
+    - Key: liftup
+      Value: 128
+    - Key: throw
+      Value: 65536
+    - Key: look
+      Value: 262144
+  m_directionrDictionary:
+    list:
+    - Key: "\u307E\u3048"
+      Value: 2
+    - Key: "\u3046\u3057\u308D"
+      Value: 4
+    - Key: "\u3072\u3060\u308A"
+      Value: 32
+    - Key: "\u307F\u304E"
+      Value: 64
+    - Key: "\u3046\u3048"
+      Value: 8
+    - Key: "\u3057\u305F"
+      Value: 16
 --- !u!114 &114693782034091798
 MonoBehaviour:
   m_ObjectHideFlags: 1

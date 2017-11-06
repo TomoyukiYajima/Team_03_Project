@@ -546,7 +546,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  m_Hp: 0
+  m_Hp: 1
   m_Agent: {fileID: 195112552439138686}
   m_ViewingDistance: 10
   m_ViewingAngle: 10

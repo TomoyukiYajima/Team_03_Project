@@ -24,6 +24,15 @@ public class WalkEnemy : Enemy {
     //自身の目の位置
     Transform m_EyePoint;
 
+    //巡回するか？
+    [SerializeField]
+    private bool m_IsPatrol;
+
+    //初期位置と向いている方向の保存用
+    private Vector3 m_StartPosition;
+    private Quaternion m_StartAngle;
+
+
     // Use this for initialization
     public override void Start () {
         base.Start();
@@ -34,19 +43,22 @@ public class WalkEnemy : Enemy {
         SetNewPatrolPointToDestination();
 
         //最初の状態を設定する
-        ChangeState(EnemyStatus.RoundState);
+        if (m_IsPatrol)
+            ChangeState(EnemyStatus.RoundState);
+        else
+            ChangeState(EnemyStatus.NonRoundState);
 
-        //m_PlayerLookPoint = m_Player.transform.Find("LookPoint");
+        m_PlayerLookPoint = m_Player.transform.Find("RayPos");
         m_EyePoint = transform.Find("EyePoint");
+
+        //初期位置と向いている方向の保存する
+        m_StartPosition = transform.position;
+        m_StartAngle = transform.rotation;
     }
 
     // Update is called once per frame
- //   void Update () {
- //       //float time = Time.deltaTime;
- //       //m_Orders[m_OrderState](time, this);
-
- //       //m_StateTimer += time;
-	//}
+    //   void Update () {
+    //}
 
 
     public bool CanSeePlayer()
@@ -120,6 +132,28 @@ public class WalkEnemy : Enemy {
         Destroy(gameObject);
     }
 
+    //ピタッと止める
+    public void AgentStop()
+    {
+        m_Agent.velocity = Vector3.zero;
+        m_Agent.isStopped = true;
+    }
+
+    //y軸を無視したポジション取得
+    public Vector3 GetEnemyPosition()
+    {
+        Vector3 l_FootPosition = transform.position;
+        l_FootPosition.y = 0;
+
+        return l_FootPosition;
+    }
+
+    //巡回するかを返す
+    public bool GetIsPatrol()
+    {
+        return m_IsPatrol;
+    }
+
     public void OnDrawGizmos()
     {
         //視界の表示
@@ -151,5 +185,15 @@ public class WalkEnemy : Enemy {
         //            Gizmos.DrawLine(m_RoundPoints[startIndex].position, m_RoundPoints[endIndex].position);
         //        }
         //    }
+    }
+
+    public Vector3 GetStartPosition()
+    {
+        return m_StartPosition;
+    }
+
+    public Quaternion GetStartAngle()
+    {
+        return m_StartAngle;
     }
 }
